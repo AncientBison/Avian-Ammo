@@ -25,7 +25,6 @@ public class RenderLoop<T extends Component> extends Thread  {
             if (timeUntilNextRender > 0) {
                 try {
                     Thread.sleep(timeUntilNextRender);
-
                 } catch (InterruptedException unusedEx) {
                     // Intentionally ignore
                 }
