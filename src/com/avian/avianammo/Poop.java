@@ -9,6 +9,8 @@ import javax.imageio.ImageIO;
 
 public class Poop extends Entity {
 
+    private Random random = new Random();
+
     Poop(Position initialPosition) throws IOException {
         super(initialPosition, new SpeedLimits(0, 2, 0), 0.4);
 
@@ -16,7 +18,6 @@ public class Poop extends Entity {
     }
 
     protected BufferedImage getRandomPoopImage() throws IOException {
-        Random random = new Random();
         int choice = random.nextInt(3); 
         return toCompatibleImage(ImageIO.read(switch (choice) {
             case 0 -> new File("src/com/avian/avianammo/res/images/poop.png");

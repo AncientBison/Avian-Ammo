@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 public class Seagull extends Entity {
     private static final double SEAGULL_FLAP_TIME = 0.1;
     private static final Position POOP_OFFSET = new Position(32, 48);
+    private static final double TIME_BETWEEN_POOPS = 4;
      
     private BufferedImage seagullPreflapLeft;
     private BufferedImage seagullPreflapRight;
@@ -22,6 +23,7 @@ public class Seagull extends Entity {
     private Direction lastDirection = Direction.RIGHT;
 
     private List<Poop> poops = new ArrayList<>();
+    private double timeUntilPoopAllowed = 0;
 
     private double flapDuration = -1;
 
@@ -60,7 +62,7 @@ public class Seagull extends Entity {
         }
     }
 
-    protected void updateFlapDuration(double deltaTime) {
+    private void updateFlapDuration(double deltaTime) {
         if (flapDuration > SEAGULL_FLAP_TIME) {
             flapDuration = -1;
             return;
@@ -68,6 +70,12 @@ public class Seagull extends Entity {
         
         if (flapDuration >= 0) {
             flapDuration += deltaTime;
+        }
+    }
+
+    private void updateTimeUntilNextPoopAllowed(double deltaTime) {
+        if (timeUntilPoopAllowed > 0) {
+            timeUntilPoopAllowed = Math.max(0, timeUntilPoopAllowed - deltaTime);
         }
     }
 
@@ -82,7 +90,9 @@ public class Seagull extends Entity {
             poop.tick(deltaTime);
         }
 
+        
         updateFlapDuration(deltaTime);
+        updateTimeUntilNextPoopAllowed(deltaTime);
     }
 
     public void renderPoops(Graphics2D graphics) {
@@ -91,8 +101,13 @@ public class Seagull extends Entity {
         }
     }
 
+    public boolean canPoop() {
+        return timeUntilPoopAllowed == 0;
+    }
+
     public void createPoop() throws IOException {
         poops.add(new Poop(
             new Position(getPosition().x() + POOP_OFFSET.x(), getPosition().y() + POOP_OFFSET.y())));
+        timeUntilPoopAllowed = TIME_BETWEEN_POOPS;
     }
 }

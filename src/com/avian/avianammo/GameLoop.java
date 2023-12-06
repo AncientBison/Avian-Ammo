@@ -27,7 +27,7 @@ public class GameLoop extends TimerTask  {
             seagull.flapAnimation();
         }
 
-        if (controls.getPoop().isKeyDown()) {
+        if (controls.getPoop().isKeyDown() && seagull.canPoop()) {
             try {
                 seagull.createPoop();
             } catch (IOException e) {
