@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 public class Seagull extends Entity {
     private static final double SEAGULL_FLAP_TIME = 0.1;
+    private static final Position POOP_OFFSET = new Position(32, 48);
      
     private BufferedImage seagullPreflapLeft;
     private BufferedImage seagullPreflapRight;
@@ -88,5 +89,10 @@ public class Seagull extends Entity {
         for (Poop poop : poops) {
             poop.render(graphics);
         }
+    }
+
+    public void createPoop() throws IOException {
+        poops.add(new Poop(
+            new Position(getPosition().x() + POOP_OFFSET.x(), getPosition().y() + POOP_OFFSET.y())));
     }
 }

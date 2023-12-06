@@ -1,5 +1,6 @@
 package avianammo;
 
+import java.io.IOException;
 import java.util.TimerTask;
 
 public class GameLoop extends TimerTask  {
@@ -24,6 +25,14 @@ public class GameLoop extends TimerTask  {
         if (controls.getUp().isKeyDown()) {
             seagull.addVerticalForce(-PhysicsConstants.SEAGULL_JUMP_FORCE);
             seagull.flapAnimation();
+        }
+
+        if (controls.getPoop().isKeyDown()) {
+            try {
+                seagull.createPoop();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
