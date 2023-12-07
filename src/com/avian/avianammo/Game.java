@@ -39,7 +39,7 @@ public class Game {
         renderLoop = new RenderLoop<>(window);
         gameLoop = new Timer();
 
-        seagull = new Seagull(DEFAULT_POSITION);
+        seagull = Seagull.createPhysicsSeagull(DEFAULT_POSITION);
 
         List<Entity> entities = new ArrayList<>();
         entities.add(seagull);

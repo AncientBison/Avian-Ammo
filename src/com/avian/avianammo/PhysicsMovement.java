@@ -1,6 +1,6 @@
 package avianammo;
 
-public abstract class PhysicsObject {
+public class PhysicsMovement implements Movement {
     private static final double GRAVITY = 4;
     private static final double PIXELS_PER_METER = 5;
 
@@ -17,12 +17,12 @@ public abstract class PhysicsObject {
 
     public record SpeedLimits(double maxHorizontalSpeed, double maxVerticalSpeedUp, double maxVerticalSpeedDown) {};
 
-    PhysicsObject(Position initialPosition, SpeedLimits speedLimits, double mass) {
+    PhysicsMovement(Position initialPosition, SpeedLimits speedLimits, double mass) {
         this.position = initialPosition;
         this.speedLimits = speedLimits;
         this.mass = mass;
     }
-    
+
     public void tick(double deltaTime) {
         position = new Position(calculateNewX(deltaTime), calculateNewY(deltaTime));
     }

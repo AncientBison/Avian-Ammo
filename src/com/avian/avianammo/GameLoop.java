@@ -18,20 +18,24 @@ public class GameLoop extends TimerTask  {
     public void run() {
         seagull.tick(1.0 / GameLoop.TICKS_PER_SECOND);
 
+        if (seagull.getMovement() instanceof PhysicsMovement) {
+            PhysicsMovement movement = (PhysicsMovement)seagull.getMovement();
+
         double forceToAdd = controls.getLeft().isKeyPressed() ? -PhysicsConstants.SEAGULL_SPEED : 0;
-        forceToAdd += controls.getRight().isKeyPressed() ? PhysicsConstants.SEAGULL_SPEED : 0;
-        seagull.addHorizontalForce(forceToAdd);
+            forceToAdd += controls.getRight().isKeyPressed() ? PhysicsConstants.SEAGULL_SPEED : 0;
+            movement.addHorizontalForce(forceToAdd);
 
-        if (controls.getUp().isKeyDown()) {
-            seagull.addVerticalForce(-PhysicsConstants.SEAGULL_JUMP_FORCE);
-            seagull.flapAnimation();
-        }
+            if (controls.getUp().isKeyDown()) {
+                movement.addVerticalForce(-PhysicsConstants.SEAGULL_JUMP_FORCE);
+                seagull.flapAnimation();
+            }
 
-        if (controls.getPoop().isKeyDown() && seagull.canPoop()) {
-            try {
-                seagull.createPoop();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (controls.getPoop().isKeyDown() && seagull.canPoop()) {
+                try {
+                    seagull.createPoop();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

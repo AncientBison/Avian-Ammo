@@ -1,33 +1,33 @@
 package avianammo;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
+import java.awt.Graphics2D;
 import java.io.IOException;
-import java.util.Random;
 
-import javax.imageio.ImageIO;
+import avianammo.PhysicsMovement.SpeedLimits;
 
 public class Poop extends Entity {
 
-    private Random random = new Random();
-
-    Poop(Position initialPosition) throws IOException {
-        super(initialPosition, new SpeedLimits(0, 2, 0), 0.4);
-
-        currentImage = toCompatibleImage(getRandomPoopImage());
+    private PoopRenderer renderer;
+        
+    private Poop(Movement movement) throws IOException {
+        super(movement);
+        
+        renderer = new PoopRenderer(movement);
     }
 
-    protected BufferedImage getRandomPoopImage() throws IOException {
-        int choice = random.nextInt(3); 
-        return toCompatibleImage(ImageIO.read(switch (choice) {
-            case 0 -> new File("src/com/avian/avianammo/res/images/poop.png");
-            case 1 -> new File("src/com/avian/avianammo/res/images/poop2.png");
-            case 2 -> new File("src/com/avian/avianammo/res/images/poop3.png");
-            default -> null;
-        }));
+    public static Poop createPhysicsPoop(Position initialPosition) throws IOException {
+        return new Poop(new PhysicsMovement(initialPosition, new SpeedLimits(0, 2, 0), 0.4));
     }
-    
-    protected void updateCurrentAnimation() {
-        // Image does not update
+
+    public static Poop createRemotePoop(RemoteMovement remoteMovement) throws IOException {
+        return new Poop(remoteMovement);
+    }
+
+    public void tick(double deltaTime) {
+        movement.tick(deltaTime);
+    }
+
+    public void render(Graphics2D graphics) {
+        renderer.render(graphics);
     }
 }
