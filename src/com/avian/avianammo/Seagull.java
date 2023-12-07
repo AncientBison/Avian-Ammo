@@ -78,4 +78,20 @@ public class Seagull extends Entity {
     public Movement getMovement() {
         return movement;
     }
+
+    public List<Poop> getPoops() {
+        return poops;
+    }
+
+    public void setPoops(List<Poop> poops) {
+        this.poops = poops;
+    }
+
+    public Position getPosition() {
+        return movement.getPosition();
+    }
+
+    public boolean isFlapping() {
+        return renderer.isFlapping();
+    }
 }

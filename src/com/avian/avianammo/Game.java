@@ -3,6 +3,9 @@ package avianammo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
+
+import avianammo.networking.GameSocket;
+
 import java.awt.KeyboardFocusManager;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -15,11 +18,13 @@ public class Game {
     private final RenderLoop<Window> renderLoop;
 
     private Seagull seagull;
+    private Seagull opponent;
     private GameCanvas canvas;
+    private GameSocket socket;
 
     private static final Position DEFAULT_POSITION = new Position(50, 50);
 
-    public Game(Window window) throws IOException {
+    public Game(Window window, GameSocket socket) throws IOException {
 
         window.addWindowListener(new WindowAdapter() {
             @Override
@@ -36,13 +41,18 @@ public class Game {
             return false;
         });
 
+        this.socket = socket;
+
         renderLoop = new RenderLoop<>(window);
         gameLoop = new Timer();
 
         seagull = Seagull.createPhysicsSeagull(DEFAULT_POSITION);
 
+        opponent = Seagull.createRemoteSeagull(new RemoteMovement(DEFAULT_POSITION, Direction.RIGHT));
+
         List<Entity> entities = new ArrayList<>();
         entities.add(seagull);
+        entities.add(opponent);
 
         canvas = new GameCanvas(entities);
         canvas.setDoubleBuffered(true);
@@ -51,7 +61,7 @@ public class Game {
     }
 
     public void start() {
-        gameLoop.scheduleAtFixedRate(new GameLoop(seagull, controls), 0, (int) (1000.0 / GameLoop.TICKS_PER_SECOND));
+        gameLoop.scheduleAtFixedRate(new GameLoop(seagull, opponent, controls, socket), 0, (int) (1000.0 / GameLoop.TICKS_PER_SECOND));
 
         renderLoop.start();
     }

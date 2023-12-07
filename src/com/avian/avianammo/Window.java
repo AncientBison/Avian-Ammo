@@ -53,7 +53,7 @@ public class Window extends JFrame {
         this.setSize(500, 500);
         this.setLocationRelativeTo(null);
 
-        Game game = new Game(this);
+        Game game = new Game(this, gameSocket);
         game.start();
 
         this.setVisible(true); // Repaints with new elements

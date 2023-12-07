@@ -30,4 +30,8 @@ public class Poop extends Entity {
     public void render(Graphics2D graphics) {
         renderer.render(graphics);
     }
+
+    public Position getPosition() {
+        return movement.getPosition();
+    }
 }

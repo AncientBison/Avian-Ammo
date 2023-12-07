@@ -76,4 +76,8 @@ public class SeagullRenderer extends Renderer {
             flapDuration += deltaTime;
         }
     }
+
+    public boolean isFlapping() {
+        return flapDuration >= 0;
+    }
 }

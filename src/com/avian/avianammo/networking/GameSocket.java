@@ -10,7 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import avianammo.Poop;
 import avianammo.Position;
+import avianammo.Seagull;
 
 public class GameSocket {
 
@@ -104,6 +106,7 @@ public class GameSocket {
         offset += 8;
         int numPoops = ByteConversion.bytesToInt(data, offset);
         List<Position> poopPositions = new ArrayList<>();
+        offset += 4;
         for (int i = 0; i < numPoops; i++) {
             double poopX = ByteConversion.bytesToDouble(data, offset);
             offset += 8;
@@ -116,12 +119,36 @@ public class GameSocket {
         latestInformationData = new NetworkInformationData(opponentFlapping, opponentX, opponentY, poopPositions);
     }
 
+    public void sendSeagullInformation(Seagull seagull) throws IOException {
+        outputStream.write(INFORMATION);
+
+        int dataSize = 0;
+        dataSize += 1; // Flags
+        dataSize += 16; // Seagull x/y
+        dataSize += 4; // Number of poops
+        dataSize += 16 * seagull.getPoops().size(); // Poops x/y
+        outputStream.write(ByteConversion.intToBytes((dataSize)));
+
+        byte flags = 0;
+        if (seagull.isFlapping()) {
+            flags |= 1;
+        }
+        outputStream.write(flags);
+
+        outputStream.write(ByteConversion.doubleToBytes(seagull.getPosition().x()));
+        outputStream.write(ByteConversion.doubleToBytes(seagull.getPosition().y()));
+        outputStream.write(ByteConversion.intToBytes(seagull.getPoops().size()));
+        for (Poop poop : seagull.getPoops()) {
+            outputStream.write(ByteConversion.doubleToBytes(poop.getPosition().x()));
+            outputStream.write(ByteConversion.doubleToBytes(poop.getPosition().y()));
+        }
+    }
+
     private static final byte READY = 0x01;
     private static final byte INFORMATION = 0x02;
     private static final byte WON = 0x03;
 
     private void sendReadyPacket() throws IOException {
-        System.out.println("trickS?");
         outputStream.write(READY);
     }
 
@@ -132,20 +159,17 @@ public class GameSocket {
                     byte packetType = inputStream.readNBytes(1)[0];
                     switch (packetType) {
                     case READY:
-                        System.out.println("fef");
                         receivedReady();
                         break;
                     case INFORMATION:
-                        System.out.println("fefINFO");
-                        byte numBytes = inputStream.readNBytes(1)[0];
+                        int numBytes = ByteConversion.bytesToInt(inputStream.readNBytes(4), 0);
                         receivedInformation(inputStream.readNBytes(numBytes));
                         break;
                     case WON:
-                        System.out.println("fefWWWW");
                         receivedWon();
                         break;
                     default:
-                        throw new IllegalArgumentException("Packet type not valid");
+                        throw new IllegalArgumentException("Packet type not valid " + packetType);
                         
                     }
                 } catch (IOException e) {

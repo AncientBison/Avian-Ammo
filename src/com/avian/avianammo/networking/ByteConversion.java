@@ -3,13 +3,6 @@ package avianammo.networking;
 public class ByteConversion {
 
     private ByteConversion() {};
-    
-    public static void writeDoubleToBytes(double d, int offset, byte[] output) {
-        long lng = Double.doubleToLongBits(d);
-        for(int i = offset; i < offset + 8; i++) {
-            output[i] = (byte)((lng >> ((7 - i) * 8)) & 0xff);
-        }
-    }
 
     public static byte[] doubleToBytes(double d) {
         byte[] output = new byte[8];
@@ -19,17 +12,17 @@ public class ByteConversion {
     }
 
     public static double bytesToDouble(byte[] bytes, int offset) {
-        long lng = 0;
-        for (int i = offset; i < offset + 8; i++) {
-            lng |= ((long) (bytes[i] & 0xff)) << ((7 - i) * 8);
-        }
-        return Double.longBitsToDouble(lng);
-    }
+        long longBits = 
+            ((long) (bytes[offset] & 0xFF) << 56) |
+            ((long) (bytes[offset + 1] & 0xFF) << 48) |
+            ((long) (bytes[offset + 2] & 0xFF) << 40) |
+            ((long) (bytes[offset + 3] & 0xFF) << 32) |
+            ((long) (bytes[offset + 4] & 0xFF) << 24) |
+            ((long) (bytes[offset + 5] & 0xFF) << 16) |
+            ((long) (bytes[offset + 6] & 0xFF) << 8) |
+            (bytes[offset + 7] & 0xFF);
 
-    public static void writeIntToBytes(int value, int offset, byte[] output) {
-        for (int i = offset; i < offset + 4; i++) {
-            output[i] = (byte) ((value >> ((3 - i + offset) * 8)) & 0xff);
-        }
+        return Double.longBitsToDouble(longBits);
     }
     
     public static byte[] intToBytes(int value) {
@@ -41,10 +34,9 @@ public class ByteConversion {
     }
     
     public static int bytesToInt(byte[] bytes, int offset) {
-        int intValue = 0;
-        for (int i = offset; i < offset + 4; i++) {
-            intValue |= ((bytes[i] & 0xff) << ((3 - i + offset) * 8));
-        }
-        return intValue;
-    }    
+        return (bytes[offset] & 0xFF) << 24 |
+            (bytes[offset + 1] & 0xFF) << 16 |
+            (bytes[offset + 2] & 0xFF) << 8 |
+            (bytes[offset + 3] & 0xFF);
+    }
 }
