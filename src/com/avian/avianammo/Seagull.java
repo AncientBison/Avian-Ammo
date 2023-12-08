@@ -9,6 +9,11 @@ public class Seagull extends Entity {
     private static final Position POOP_OFFSET = new Position(32, 48);
     private static final double TIME_BETWEEN_POOPS = 4;
 
+    private static final double POOP_COLLISION_RADIUS_LEFT = 16;
+    private static final double POOP_COLLISION_RADIUS_RIGHT = 64;
+    private static final double POOP_COLLISION_RADIUS_UP = 10;
+    private static final double POOP_COLLISION_RADIUS_DOWN = 20;
+
     private List<Poop> poops = new ArrayList<>();
     private double timeUntilPoopAllowed = 0;
 
@@ -101,5 +106,21 @@ public class Seagull extends Entity {
 
     public Direction getAnimationDirection() {
         return renderer.getAnimationDirection();
+    }
+
+    public boolean intersectingAnyOfPoops(List<Poop> poops) {
+        
+        for (Poop poop : poops) {
+
+            if (getPosition().x() > poop.getPosition().x() - POOP_COLLISION_RADIUS_LEFT && 
+                getPosition().x() < poop.getPosition().x() + POOP_COLLISION_RADIUS_RIGHT &&
+                getPosition().y() > poop.getPosition().y() - POOP_COLLISION_RADIUS_UP &&
+                getPosition().y() < poop.getPosition().y() + POOP_COLLISION_RADIUS_DOWN
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

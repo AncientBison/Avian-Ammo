@@ -76,6 +76,10 @@ public class GameLoop extends TimerTask  {
                     e.printStackTrace();
                 }
             }
+
+            if (opponentSeagull.intersectingAnyOfPoops(seagull.getPoops())) {
+                System.out.println("bonk");
+            }
         }
 
         try {
