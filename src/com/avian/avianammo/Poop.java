@@ -7,8 +7,8 @@ import avianammo.PhysicsMovement.SpeedLimits;
 
 public class Poop extends Entity {
 
-    private PoopRenderer renderer;
-        
+    private final PoopRenderer renderer;
+
     private Poop(Movement movement) throws IOException {
         super(movement);
         
@@ -25,6 +25,10 @@ public class Poop extends Entity {
 
     public void tick(double deltaTime) {
         movement.tick(deltaTime);
+    }
+
+    public boolean shouldBeRemoved() {
+        return getPosition().y() >= PhysicsConstants.MAX_Y;
     }
 
     public void render(Graphics2D graphics) {

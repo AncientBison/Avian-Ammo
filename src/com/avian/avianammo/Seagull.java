@@ -17,7 +17,7 @@ public class Seagull extends Entity {
     private List<Poop> poops = new ArrayList<>();
     private double timeUntilPoopAllowed = 0;
 
-    private SeagullRenderer renderer;
+    private final SeagullRenderer renderer;
 
     private Seagull(Movement movement) throws IOException {
         super(movement);
@@ -50,11 +50,18 @@ public class Seagull extends Entity {
 
     public void tick(double deltaTime) {
         movement.tick(deltaTime);
+        List<Poop> poopsToRemove = new ArrayList<>();
         for (Poop poop : poops) {
             poop.tick(deltaTime);
+            if (poop.shouldBeRemoved()) {
+                poopsToRemove.add(poop);
+            }
         }
 
-        
+        for (Poop poop : poopsToRemove) {
+            poops.remove(poop);
+        }
+
         renderer.tick(deltaTime);
         updateTimeUntilNextPoopAllowed(deltaTime);
     }
