@@ -28,12 +28,19 @@ public class Window extends JFrame {
 
         System.out.println(serverOrClient);
 
+        Position initialPosition;
+        Direction initialDirection;
+
         if (serverOrClient.equals("s")) {
             Server server = new Server();
             gameSocket = server.listen(4000);
+            initialPosition = Seagull.DEFAULT_POSITION;
+            initialDirection = Seagull.DEFAULT_DIRECTION;
         } else if (serverOrClient.equals("c")) {
             Client client = new Client();
             gameSocket = client.connect(4000);
+            initialPosition = Seagull.OPPONENT_DEFAULT_POSITION;
+            initialDirection = Seagull.OPPONENT_DEFAULT_DIRECTION;
         } else {
             throw new IllegalArgumentException(serverOrClient + " is not a valid option.");
         }
@@ -53,7 +60,7 @@ public class Window extends JFrame {
         this.setSize(500, 500);
         this.setLocationRelativeTo(null);
 
-        Game game = new Game(this, gameSocket);
+        Game game = new Game(this, gameSocket, initialPosition, initialDirection);
         game.start();
 
         this.setVisible(true); // Repaints with new elements

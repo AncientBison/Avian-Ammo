@@ -37,9 +37,15 @@ public class SeagullRenderer extends Renderer {
     }
 
     public void render(Graphics2D graphics) {
+        graphics.drawRect(
+            (int)(movement.getPosition().x() - Seagull.POOP_COLLISION_RADIUS_LEFT),
+            (int)(movement.getPosition().y() - Seagull.POOP_COLLISION_RADIUS_UP),
+            (int)(Seagull.POOP_COLLISION_RADIUS_RIGHT + Seagull.POOP_COLLISION_RADIUS_LEFT),
+            (int)(Seagull.POOP_COLLISION_RADIUS_DOWN + Seagull.POOP_COLLISION_RADIUS_UP)
+        );
         Position position = movement.getPosition();
         updateCurrentAnimation();
-        graphics.drawImage(currentImage, (int) position.x(), (int) position.y(), null);
+        graphics.drawImage(currentImage, (int) position.x() - currentImage.getWidth()/2, (int) position.y() - currentImage.getHeight()/2, null);
     }
 
     protected void updateCurrentAnimation() {

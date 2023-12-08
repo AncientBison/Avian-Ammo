@@ -3,18 +3,26 @@ package avianammo;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Seagull extends Entity {
-    private static final Position POOP_OFFSET = new Position(32, 48);
+    private static final Position POOP_OFFSET = new Position(0, 16);
     private static final double TIME_BETWEEN_POOPS = 4;
 
-    private static final double POOP_COLLISION_RADIUS_LEFT = 16;
-    private static final double POOP_COLLISION_RADIUS_RIGHT = 64;
-    private static final double POOP_COLLISION_RADIUS_UP = 10;
-    private static final double POOP_COLLISION_RADIUS_DOWN = 20;
+    public static final double POOP_COLLISION_RADIUS_LEFT = 20;
+    public static final double POOP_COLLISION_RADIUS_RIGHT = 20;
+    public static final double POOP_COLLISION_RADIUS_UP = 10;
+    public static final double POOP_COLLISION_RADIUS_DOWN = 10;
 
-    private List<Poop> poops = new ArrayList<>();
+    public static final Position DEFAULT_POSITION = new Position(50, 50);
+    public static final Direction DEFAULT_DIRECTION = Direction.RIGHT;
+    public static final Position OPPONENT_DEFAULT_POSITION = new Position(450, 50);
+    public static final Direction OPPONENT_DEFAULT_DIRECTION = Direction.LEFT;
+
+    private Map<Integer, Poop> poops = new HashMap<>();
     private double timeUntilPoopAllowed = 0;
 
     private final SeagullRenderer renderer;
@@ -51,7 +59,7 @@ public class Seagull extends Entity {
     public void tick(double deltaTime) {
         movement.tick(deltaTime);
         List<Poop> poopsToRemove = new ArrayList<>();
-        for (Poop poop : poops) {
+        for (Poop poop : poops.values()) {
             poop.tick(deltaTime);
             if (poop.shouldBeRemoved()) {
                 poopsToRemove.add(poop);
@@ -59,7 +67,7 @@ public class Seagull extends Entity {
         }
 
         for (Poop poop : poopsToRemove) {
-            poops.remove(poop);
+            poops.remove(poop.getId());
         }
 
         renderer.tick(deltaTime);
@@ -72,7 +80,7 @@ public class Seagull extends Entity {
     }
 
     public void renderPoops(Graphics2D graphics) {
-        for (Poop poop : poops) {
+        for (Poop poop : poops.values()) {
             poop.render(graphics);
         }
     }
@@ -82,8 +90,9 @@ public class Seagull extends Entity {
     }
 
     public void createPoop() throws IOException {
-        poops.add(Poop.createPhysicsPoop(
-            new Position(movement.getPosition().x() + POOP_OFFSET.x(), movement.getPosition().y() + POOP_OFFSET.y())));
+        Poop poop = Poop.createPhysicsPoop(
+            new Position(movement.getPosition().x() + POOP_OFFSET.x(), movement.getPosition().y() + POOP_OFFSET.y()));
+        poops.put(poop.getId(), poop);
         timeUntilPoopAllowed = TIME_BETWEEN_POOPS;
     }
 
@@ -91,11 +100,11 @@ public class Seagull extends Entity {
         return movement;
     }
 
-    public List<Poop> getPoops() {
+    public Map<Integer, Poop> getPoops() {
         return poops;
     }
 
-    public void setPoops(List<Poop> poops) {
+    public void setPoops(Map<Integer, Poop> poops) {
         this.poops = poops;
     }
 
@@ -115,7 +124,7 @@ public class Seagull extends Entity {
         return renderer.getAnimationDirection();
     }
 
-    public boolean intersectingAnyOfPoops(List<Poop> poops) {
+    public Poop getFirstIntersectingPoop(Collection<Poop> poops) {
         
         for (Poop poop : poops) {
 
@@ -124,10 +133,10 @@ public class Seagull extends Entity {
                 getPosition().y() > poop.getPosition().y() - POOP_COLLISION_RADIUS_UP &&
                 getPosition().y() < poop.getPosition().y() + POOP_COLLISION_RADIUS_DOWN
             ) {
-                return true;
+                return poop;
             }
         }
 
-        return false;
+        return null;
     }
 }

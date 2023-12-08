@@ -1,8 +1,8 @@
 package avianammo;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.TimerTask;
 
 import avianammo.networking.GameSocket;
@@ -20,7 +20,7 @@ public class GameLoop extends TimerTask  {
         this.opponentSeagull = opponentSeagull;
         this.controls = controls;
         this.socket = socket;
-    }   
+    }
 
     @Override
     public void run() {
@@ -43,17 +43,28 @@ public class GameLoop extends TimerTask  {
 
             movement.setPosition(new Position(x, y));
 
-            List<Poop> poops = new ArrayList<>();
+            Map<Integer, Poop> networkPoops = socket.getLatestInformationData().poops();
 
-            for (Position poopPosition : socket.getLatestInformationData().poopPositions()) {
-                try {
-                    poops.add(Poop.createRemotePoop(new RemoteMovement(poopPosition, Direction.CENTER)));
-                } catch (IOException e) {
-                    e.printStackTrace();
+            Map<Integer, Poop> clientPoops = opponentSeagull.getPoops();
+            Iterator<Map.Entry<Integer, Poop>> clientPoopIterator = clientPoops.entrySet().iterator();
+            while (clientPoopIterator.hasNext()) {
+                Poop clientPoop = clientPoopIterator.next().getValue();
+                if (!networkPoops.containsKey(clientPoop.getId())) {
+                    clientPoopIterator.remove();
+                    continue;
+                }
+
+                Poop networkPoop = networkPoops.get(clientPoop.getId());
+                RemoteMovement poopMovement = (RemoteMovement) clientPoop.getMovement();
+                poopMovement.setPosition(networkPoop.getPosition());
+            }
+
+            for (Poop networkPoop : networkPoops.values()) {
+                if (!clientPoops.containsKey(networkPoop.getId())) {
+                    clientPoops.put(networkPoop.getId(), networkPoop);
                 }
             }
 
-            opponentSeagull.setPoops(poops);
             movement.setDirection(animationDirection);
         }
 
@@ -77,7 +88,9 @@ public class GameLoop extends TimerTask  {
                 }
             }
 
-            if (opponentSeagull.intersectingAnyOfPoops(seagull.getPoops())) {
+            Poop intersectingPoop = opponentSeagull.getFirstIntersectingPoop(seagull.getPoops().values());
+            if (intersectingPoop != null) {
+                seagull.getPoops().remove(intersectingPoop.getId());
                 System.out.println("bonk");
             }
         }

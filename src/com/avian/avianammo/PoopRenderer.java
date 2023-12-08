@@ -17,7 +17,7 @@ public class PoopRenderer extends Renderer {
     public void render(Graphics2D graphics) {
         Position position = movement.getPosition();
         updateCurrentAnimation();
-        graphics.drawImage(currentImage, (int) position.x(), (int) position.y(), null);
+        graphics.drawImage(currentImage, (int) position.x() - currentImage.getWidth()/2, (int) position.y() - currentImage.getHeight()/2, null);
     }
 
     public PoopRenderer(Movement movement) throws IOException {

@@ -32,7 +32,7 @@ public class PhysicsMovement implements Movement {
         forceHorizontal = 0;  // Force has been applied
         velocityHorizontal += accelerationHorizontal * deltaTime;
         velocityHorizontal = speedLimits.maxHorizontalSpeed() * Math.signum(velocityHorizontal) * (1 - Math.pow(Math.E, -Math.abs(velocityHorizontal)));
-        return Math.clamp(position.x() + velocityHorizontal * PIXELS_PER_METER, 0, PhysicsConstants.MAX_X);
+        return Math.clamp(position.x() + velocityHorizontal * PIXELS_PER_METER, PhysicsConstants.MIN_X, PhysicsConstants.MAX_X);
     }
     
     private double calculateNewY(double deltaTime) {
@@ -41,7 +41,7 @@ public class PhysicsMovement implements Movement {
         velocityVertical += accelerationVertical * deltaTime;
         double speedLimit = (velocityVertical > 0 ? speedLimits.maxVerticalSpeedUp() : speedLimits.maxVerticalSpeedDown());
         velocityVertical = speedLimit * Math.signum(velocityVertical) * (1 - Math.pow(Math.E, -Math.abs(velocityVertical)));
-        return Math.clamp(position.y() + velocityVertical * PIXELS_PER_METER, 0, PhysicsConstants.MAX_Y);
+        return Math.clamp(position.y() + velocityVertical * PIXELS_PER_METER, PhysicsConstants.MIN_Y, PhysicsConstants.MAX_Y);
     }
 
     public void addHorizontalForce(double force) {

@@ -10,6 +10,9 @@ public class PhysicsConstants {
     public static final double SEAGULL_JUMP_FORCE = 1100;
     public static final double SEAGULL_MASS = 4;
 
+    public static final int MIN_X = 32;
+    public static final int MIN_Y = 32;
+
     public static final int MAX_X = 500;
     public static final int MAX_Y = 500;
 }

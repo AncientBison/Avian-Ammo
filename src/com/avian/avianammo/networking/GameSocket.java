@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import avianammo.Direction;
 import avianammo.Poop;
 import avianammo.Position;
+import avianammo.RemoteMovement;
 import avianammo.Seagull;
 
 public class GameSocket {
@@ -94,9 +95,9 @@ public class GameSocket {
         }
     }
 
-    public record NetworkInformationData(boolean opponentFlapping, Direction opponentAnimationDirection, double opponentX, double opponentY, List<Position> poopPositions) {}
+    public record NetworkInformationData(boolean opponentFlapping, Direction opponentAnimationDirection, double opponentX, double opponentY, Map<Integer, Poop> poops) {}
 
-    private void receivedInformation(byte[] data) {
+    private void receivedInformation(byte[] data) throws IOException {
         int offset = 0;
         byte flags = data[0];
         boolean opponentFlapping = (flags & 1) == 1;
@@ -107,18 +108,20 @@ public class GameSocket {
         double opponentY = ByteConversion.bytesToDouble(data, offset);
         offset += 8;
         int numPoops = ByteConversion.bytesToInt(data, offset);
-        List<Position> poopPositions = new ArrayList<>();
+        Map<Integer, Poop> poops = new HashMap<>();
         offset += 4;
         for (int i = 0; i < numPoops; i++) {
+            int id = ByteConversion.bytesToInt(data, offset);
+            offset += 4;
             double poopX = ByteConversion.bytesToDouble(data, offset);
             offset += 8;
             double poopY = ByteConversion.bytesToDouble(data, offset);
             offset += 8;
 
-            poopPositions.add(new Position(poopX, poopY));
+            poops.put(id, Poop.createRemotePoop(new RemoteMovement(new Position(poopX, poopY), Direction.CENTER), id));
         }
 
-        latestInformationData = new NetworkInformationData(opponentFlapping, opponentAnimationDirection, opponentX, opponentY, poopPositions);
+        latestInformationData = new NetworkInformationData(opponentFlapping, opponentAnimationDirection, opponentX, opponentY, poops);
     }
 
     public void sendSeagullInformation(Seagull seagull) throws IOException {
@@ -128,7 +131,7 @@ public class GameSocket {
         dataSize += 1; // Flags
         dataSize += 16; // Seagull x/y
         dataSize += 4; // Number of poops
-        dataSize += 16 * seagull.getPoops().size(); // Poops x/y
+        dataSize += (8 + 8 + 4) * seagull.getPoops().size(); // Poops time conceived, x/y
         outputStream.write(ByteConversion.intToBytes((dataSize)));
 
         byte flags = 0;
@@ -145,7 +148,8 @@ public class GameSocket {
         outputStream.write(ByteConversion.doubleToBytes(seagull.getPosition().x()));
         outputStream.write(ByteConversion.doubleToBytes(seagull.getPosition().y()));
         outputStream.write(ByteConversion.intToBytes(seagull.getPoops().size()));
-        for (Poop poop : seagull.getPoops()) {
+        for (Poop poop : seagull.getPoops().values()) {
+            outputStream.write(ByteConversion.intToBytes(poop.getId()));
             outputStream.write(ByteConversion.doubleToBytes(poop.getPosition().x()));
             outputStream.write(ByteConversion.doubleToBytes(poop.getPosition().y()));
         }

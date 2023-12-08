@@ -22,9 +22,7 @@ public class Game {
     private GameCanvas canvas;
     private GameSocket socket;
 
-    private static final Position DEFAULT_POSITION = new Position(50, 50);
-
-    public Game(Window window, GameSocket socket) throws IOException {
+    public Game(Window window, GameSocket socket, Position initialPosition, Direction initialDirection) throws IOException {
 
         window.addWindowListener(new WindowAdapter() {
             @Override
@@ -46,9 +44,9 @@ public class Game {
         renderLoop = new RenderLoop<>(window);
         gameLoop = new Timer();
 
-        seagull = Seagull.createPhysicsSeagull(DEFAULT_POSITION);
+        seagull = Seagull.createPhysicsSeagull(initialPosition);
 
-        opponent = Seagull.createRemoteSeagull(new RemoteMovement(DEFAULT_POSITION, Direction.RIGHT));
+        opponent = Seagull.createRemoteSeagull(new RemoteMovement(initialPosition, initialDirection));
 
         List<Entity> entities = new ArrayList<>();
         entities.add(seagull);
