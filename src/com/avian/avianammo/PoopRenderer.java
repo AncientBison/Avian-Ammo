@@ -12,7 +12,6 @@ public class PoopRenderer extends Renderer {
 
     private Random random = new Random();
 
-    private BufferedImage currentImage;
     private Movement movement;
 
     public void render(Graphics2D graphics) {

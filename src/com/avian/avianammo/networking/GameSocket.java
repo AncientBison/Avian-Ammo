@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import avianammo.Direction;
 import avianammo.Poop;
 import avianammo.Position;
 import avianammo.Seagull;
@@ -93,12 +94,13 @@ public class GameSocket {
         }
     }
 
-    public record NetworkInformationData(boolean opponentFlapping, double opponentX, double opponentY, List<Position> poopPositions) {}
+    public record NetworkInformationData(boolean opponentFlapping, Direction opponentAnimationDirection, double opponentX, double opponentY, List<Position> poopPositions) {}
 
     private void receivedInformation(byte[] data) {
         int offset = 0;
         byte flags = data[0];
         boolean opponentFlapping = (flags & 1) == 1;
+        Direction opponentAnimationDirection = ((flags & 0xff) & (1 << 1)) != 0 ? Direction.LEFT : Direction.RIGHT;
         offset += 1;
         double opponentX = ByteConversion.bytesToDouble(data, offset);
         offset += 8;
@@ -116,7 +118,7 @@ public class GameSocket {
             poopPositions.add(new Position(poopX, poopY));
         }
 
-        latestInformationData = new NetworkInformationData(opponentFlapping, opponentX, opponentY, poopPositions);
+        latestInformationData = new NetworkInformationData(opponentFlapping, opponentAnimationDirection, opponentX, opponentY, poopPositions);
     }
 
     public void sendSeagullInformation(Seagull seagull) throws IOException {
@@ -133,6 +135,11 @@ public class GameSocket {
         if (seagull.isFlapping()) {
             flags |= 1;
         }
+
+        if (seagull.getAnimationDirection() == Direction.LEFT) {
+            flags |= (1 << 1);
+        }
+
         outputStream.write(flags);
 
         outputStream.write(ByteConversion.doubleToBytes(seagull.getPosition().x()));

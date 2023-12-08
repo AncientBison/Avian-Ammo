@@ -25,4 +25,8 @@ public class RemoteMovement implements Movement {
     public void setPosition(Position position) {
         this.position = position;
     }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
 }

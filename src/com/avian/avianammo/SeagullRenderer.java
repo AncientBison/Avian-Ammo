@@ -18,9 +18,9 @@ public class SeagullRenderer extends Renderer {
     private BufferedImage seagullPostflapRight;
 
     private Movement movement;
-    private BufferedImage currentImage;
     private double flapDuration = -1;
     private Direction lastDirection = Direction.RIGHT;
+    boolean directionOverride;
 
     public SeagullRenderer(Movement movement) throws IOException {
         this.movement = movement;
@@ -44,6 +44,7 @@ public class SeagullRenderer extends Renderer {
 
     protected void updateCurrentAnimation() {
         boolean flapping = flapDuration >= 0;
+
         if (movement.getDirection() == Direction.RIGHT) {
             currentImage = flapping ? seagullPostflapRight : seagullPreflapRight;
             lastDirection = Direction.RIGHT;
@@ -79,5 +80,13 @@ public class SeagullRenderer extends Renderer {
 
     public boolean isFlapping() {
         return flapDuration >= 0;
+    }
+
+    public void stopFlap() {
+        flapDuration = -1;
+    }
+
+    public Direction getAnimationDirection() {
+        return lastDirection;
     }
 }

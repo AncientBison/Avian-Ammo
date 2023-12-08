@@ -94,4 +94,12 @@ public class Seagull extends Entity {
     public boolean isFlapping() {
         return renderer.isFlapping();
     }
+
+    public void stopFlap() {
+        renderer.stopFlap();
+    }
+
+    public Direction getAnimationDirection() {
+        return renderer.getAnimationDirection();
+    }
 }

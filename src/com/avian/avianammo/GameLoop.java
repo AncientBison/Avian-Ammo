@@ -1,6 +1,8 @@
 package avianammo;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimerTask;
 
 import avianammo.networking.GameSocket;
@@ -18,7 +20,7 @@ public class GameLoop extends TimerTask  {
         this.opponentSeagull = opponentSeagull;
         this.controls = controls;
         this.socket = socket;
-    }
+    }   
 
     @Override
     public void run() {
@@ -30,7 +32,29 @@ public class GameLoop extends TimerTask  {
             double x = socket.getLatestInformationData().opponentX();
             double y = socket.getLatestInformationData().opponentY();
 
+            boolean opponentFlapping = socket.getLatestInformationData().opponentFlapping();
+            Direction animationDirection = socket.getLatestInformationData().opponentAnimationDirection();
+
+            if (opponentFlapping) {
+                opponentSeagull.flapAnimation();
+            } else {
+                opponentSeagull.stopFlap();
+            }
+
             movement.setPosition(new Position(x, y));
+
+            List<Poop> poops = new ArrayList<>();
+
+            for (Position poopPosition : socket.getLatestInformationData().poopPositions()) {
+                try {
+                    poops.add(Poop.createRemotePoop(new RemoteMovement(poopPosition, Direction.CENTER)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            opponentSeagull.setPoops(poops);
+            movement.setDirection(animationDirection);
         }
 
         if (seagull.getMovement() instanceof PhysicsMovement) {
