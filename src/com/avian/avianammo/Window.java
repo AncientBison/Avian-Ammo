@@ -1,7 +1,6 @@
 package avianammo;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 import javax.swing.JFrame;
 
@@ -9,40 +8,54 @@ import avianammo.networking.Client;
 import avianammo.networking.GameSocket;
 import avianammo.networking.Server;
 import avianammo.networking.GameSocket.GameState;
+import avianammo.pages.AbstractPage;
+import avianammo.pages.HomePage;
+import avianammo.pages.WaitingPage;
 
 public class Window extends JFrame {
 
-    public Window() throws IOException {
+    private final HomePage home;
+
+    public Window() throws IOException, InterruptedException {
         super("Avian Ammo");
 
-        String serverOrClient;
+        this.setSize(500, 500);
+        this.setLocationRelativeTo(null);
 
-        try (Scanner consoleInput = new Scanner(System.in)) {
+        home = new HomePage();
+        add(home);
 
-            System.out.println("[(S)erver/(c)lient]");
+        setVisible(true);
 
-            serverOrClient = consoleInput.nextLine().toLowerCase().trim();
-        }
+        loadGame(home.awaitGameRoleChoice());
+    }
+
+    public void loadGame(GameRole role) throws IOException {
+        remove(home);
+
+        AbstractPage waitingPage = new HomePage();
+        add(waitingPage);
+
+        waitingPage.awaitComponentsLoad();
+
+        repaint();
+//        setVisible(true);
 
         GameSocket gameSocket;
-
-        System.out.println(serverOrClient);
 
         Position initialPosition;
         Direction initialDirection;
 
-        if (serverOrClient.equals("s")) {
+        if (role == GameRole.HOST) {
             Server server = new Server();
             gameSocket = server.listen(4000);
             initialPosition = Seagull.DEFAULT_POSITION;
             initialDirection = Seagull.DEFAULT_DIRECTION;
-        } else if (serverOrClient.equals("c")) {
+        } else {
             Client client = new Client();
             gameSocket = client.connect(4000);
             initialPosition = Seagull.OPPONENT_DEFAULT_POSITION;
             initialDirection = Seagull.OPPONENT_DEFAULT_DIRECTION;
-        } else {
-            throw new IllegalArgumentException(serverOrClient + " is not a valid option.");
         }
 
         gameSocket.listenForPackets();
@@ -57,8 +70,7 @@ public class Window extends JFrame {
             }
         }
 
-        this.setSize(500, 500);
-        this.setLocationRelativeTo(null);
+        remove(waitingPage);
 
         Game game = new Game(this, gameSocket, initialPosition, initialDirection);
         game.start();
