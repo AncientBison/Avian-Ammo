@@ -19,13 +19,16 @@ public class SeagullRenderer extends Renderer {
     private final BufferedImage seagullPostflapLeft;
     private final BufferedImage seagullPostflapRight;
 
+    private final BufferedImage heart;
+
     private final Movement movement;
     private double flapDuration = -1;
     private Direction lastDirection = Direction.RIGHT;
-    boolean directionOverride;
+    private final Seagull seagull;
 
-    public SeagullRenderer(Movement movement) throws IOException {
+    public SeagullRenderer(Movement movement, Seagull seagull) throws IOException {
         this.movement = movement;
+        this.seagull = seagull;
 
         seagullPreflapLeft = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_left.png")));
 
@@ -34,6 +37,8 @@ public class SeagullRenderer extends Renderer {
         seagullPostflapLeft = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_flap_left.png")));
 
         seagullPostflapRight = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_flap_right.png")));
+
+        heart = ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/heart.png")));
     
         currentImage = seagullPreflapRight;
     }
@@ -47,6 +52,11 @@ public class SeagullRenderer extends Renderer {
         );
         Position position = movement.getPosition();
         updateCurrentAnimation();
+
+        for (int i = 0; i < seagull.getHealth(); i++) {
+            graphics.drawImage(heart, ((int) position.x() - heart.getWidth() / 2) + ((i - 1) * 30), ((int) position.y() - heart.getHeight() / 2 ) - 40, null);
+        }
+
         graphics.drawImage(currentImage, (int) position.x() - currentImage.getWidth()/2, (int) position.y() - currentImage.getHeight()/2, null);
     }
 

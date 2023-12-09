@@ -22,15 +22,19 @@ public class Seagull extends Entity {
     public static final Position OPPONENT_DEFAULT_POSITION = new Position(450, 50);
     public static final Direction OPPONENT_DEFAULT_DIRECTION = Direction.LEFT;
 
+    public static final int MAX_HEALTH = 3;
+
     private Map<Integer, Poop> poops = new HashMap<>();
     private double timeUntilPoopAllowed = 0;
+
+    private int health = MAX_HEALTH;
 
     private final SeagullRenderer renderer;
 
     private Seagull(Movement movement) throws IOException {
         super(movement);
 
-        renderer = new SeagullRenderer(movement);
+        renderer = new SeagullRenderer(movement, this);
     }
 
     public static Seagull createPhysicsSeagull(Position initialPosition) throws IOException {
@@ -118,6 +122,14 @@ public class Seagull extends Entity {
 
     public void stopFlap() {
         renderer.stopFlap();
+    }
+
+    public void setTotalDamage(int damage) {
+        this.health = Math.max(MAX_HEALTH - damage, 0);
+    }
+
+    public int getHealth() {
+        return health;
     }
 
     public Direction getAnimationDirection() {
