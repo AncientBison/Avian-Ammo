@@ -4,8 +4,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -18,21 +16,14 @@ public class HomePage extends AbstractPage {
     private boolean waitingForAction = true;
     private GameRole role = GameRole.NONE;
 
-    public HomePage() {
-        super(null);
-        //ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-page-background.png"))));
+    public HomePage() throws IOException {
+        super(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))));
     }
 
     @Override
-    protected void drawComponents() {
-        ImageIcon joinIcon = null;
-        ImageIcon hostIcon = null;
-        try {
-            joinIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/join-button.png"))).getScaledInstance(100, 100, Image.SCALE_FAST));
-            hostIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/host-button.png"))).getScaledInstance(100, 100, Image.SCALE_FAST));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected void drawComponents() throws IOException {
+        ImageIcon joinIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/join-button.png"))).getScaledInstance(100, 100, Image.SCALE_FAST));
+        ImageIcon hostIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/host-button.png"))).getScaledInstance(100, 100, Image.SCALE_FAST));
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 0));
 
@@ -60,8 +51,8 @@ public class HomePage extends AbstractPage {
         });
         buttonPanel.add(hostButton);
 
-
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(PhysicsConstants.MAX_Y / 2, 0, 0, 0));
+        buttonPanel.setBackground(new Color(0, 0, 0, 0));
 
         add(buttonPanel);
     }

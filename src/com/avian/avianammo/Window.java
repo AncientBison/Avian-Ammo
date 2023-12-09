@@ -8,7 +8,6 @@ import avianammo.networking.Client;
 import avianammo.networking.GameSocket;
 import avianammo.networking.Server;
 import avianammo.networking.GameSocket.GameState;
-import avianammo.pages.AbstractPage;
 import avianammo.pages.HomePage;
 import avianammo.pages.WaitingPage;
 
@@ -19,11 +18,15 @@ public class Window extends JFrame {
     public Window() throws IOException, InterruptedException {
         super("Avian Ammo");
 
-        this.setSize(500, 500);
+        this.setSize(1024, 1024);
         this.setLocationRelativeTo(null);
+
+        setVisible(false);
 
         home = new HomePage();
         add(home);
+
+        home.awaitComponentsLoad();
 
         setVisible(true);
 
@@ -33,13 +36,12 @@ public class Window extends JFrame {
     public void loadGame(GameRole role) throws IOException {
         remove(home);
 
-        AbstractPage waitingPage = new HomePage();
+        WaitingPage waitingPage = new WaitingPage();
         add(waitingPage);
 
         waitingPage.awaitComponentsLoad();
 
-        repaint();
-//        setVisible(true);
+        setVisible(true);
 
         GameSocket gameSocket;
 
@@ -75,6 +77,6 @@ public class Window extends JFrame {
         Game game = new Game(this, gameSocket, initialPosition, initialDirection);
         game.start();
 
-        this.setVisible(true); // Repaints with new elements
+        setVisible(true); // Repaints with new elements
     }
 }
