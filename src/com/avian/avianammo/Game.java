@@ -69,4 +69,8 @@ public class Game {
         gameLoop.cancel();
         renderLoop.join();
     }
+
+    public GameCanvas getCanvas() {
+        return canvas;
+    }
 }

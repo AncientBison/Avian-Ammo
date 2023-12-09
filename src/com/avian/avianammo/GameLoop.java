@@ -96,8 +96,15 @@ public class GameLoop extends TimerTask  {
             Poop intersectingPoop = opponentSeagull.getFirstIntersectingPoop(seagull.getPoops().values());
             if (intersectingPoop != null) {
                 seagull.getPoops().remove(intersectingPoop.getId());
-                System.out.println("bonk");
+                if (opponentSeagull.getHealth() - 1 == 0) {
+                    try {
+                        socket.sendWin();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 seagull.setShouldSendHitOpponentMessage(true);
+                opponentSeagull.takeDamage(1);
             }
         }
 

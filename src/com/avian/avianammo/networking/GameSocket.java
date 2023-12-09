@@ -75,7 +75,7 @@ public class GameSocket {
     }
 
     public void sendWin() throws IOException {
-        outputStream.write(READY);
+        outputStream.write(WON);
         if (gameState == GameState.WAITING_AFTER_LOSS) {
             gameState = GameState.WAITING_AFTER_TIE;
         } else if (gameState != GameState.PLAYING) {
@@ -215,5 +215,9 @@ public class GameSocket {
     public void close() throws IOException {
         packetListenerThread.interrupt();
         socket.close();
+    }
+
+    public void startPlay() {
+        this.gameState = GameState.PLAYING;
     }
 }
