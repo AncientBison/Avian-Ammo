@@ -65,6 +65,11 @@ public class GameLoop extends TimerTask  {
                 }
             }
 
+            if (socket.getLatestInformationData().gotHit()) {
+                seagull.takeDamage(1);
+                socket.setGotHit(false);
+            }
+
             movement.setDirection(animationDirection);
         }
 
@@ -92,6 +97,7 @@ public class GameLoop extends TimerTask  {
             if (intersectingPoop != null) {
                 seagull.getPoops().remove(intersectingPoop.getId());
                 System.out.println("bonk");
+                seagull.setShouldSendHitOpponentMessage(true);
             }
         }
 

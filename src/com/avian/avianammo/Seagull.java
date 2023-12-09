@@ -31,6 +31,8 @@ public class Seagull extends Entity {
 
     private final SeagullRenderer renderer;
 
+    private boolean sendHitOpponentMessage = false;
+
     private Seagull(Movement movement) throws IOException {
         super(movement);
 
@@ -124,8 +126,8 @@ public class Seagull extends Entity {
         renderer.stopFlap();
     }
 
-    public void setTotalDamage(int damage) {
-        this.health = Math.max(MAX_HEALTH - damage, 0);
+    public void takeDamage(int damage) {
+        this.health = Math.max(health - damage, 0);
     }
 
     public int getHealth() {
@@ -150,5 +152,13 @@ public class Seagull extends Entity {
         }
 
         return null;
+    }
+
+    public boolean shouldSendHitOpponentMessage() {
+        return sendHitOpponentMessage;
+    }
+
+    public void setShouldSendHitOpponentMessage(boolean shouldSend) {
+        this.sendHitOpponentMessage = shouldSend;
     }
 }
