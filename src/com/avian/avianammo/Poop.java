@@ -27,7 +27,7 @@ public class Poop extends Entity {
     }
 
     public static Poop createPhysicsPoop(Position initialPosition) throws IOException {
-        return new Poop(new PhysicsMovement(initialPosition, new SpeedLimits(0, 2, 0), 0.4));
+        return new Poop(new PhysicsMovement(initialPosition, new SpeedLimits(0, 2, 0), 0.4, PhysicsConstants.POOP_SIZE));
     }
 
     public static Poop createRemotePoop(RemoteMovement remoteMovement, int id) throws IOException {
@@ -39,7 +39,7 @@ public class Poop extends Entity {
     }
 
     public boolean shouldBeRemoved() {
-        return getPosition().y() >= PhysicsConstants.MAX_Y;
+        return getPosition().y() >= (PhysicsConstants.MAX_Y - PhysicsConstants.POOP_SIZE);
     }
 
     public void render(Graphics2D graphics) {

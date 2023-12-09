@@ -39,7 +39,7 @@ public class Seagull extends Entity {
                         PhysicsConstants.SEAGULL_TERMINAL_VELOCITY_HORIZONTAL,
                         PhysicsConstants.SEAGULL_TERMINAL_VELOCITY_VERTICAL_UPWARDS,
                         PhysicsConstants.SEAGULL_TERMINAL_VELOCITY_VERTICAL_DOWNWARDS),
-                PhysicsConstants.SEAGULL_MASS));
+                PhysicsConstants.SEAGULL_MASS, PhysicsConstants.SEAGULL_SIZE));
     }
 
     public static Seagull createRemoteSeagull(RemoteMovement movement) throws IOException {

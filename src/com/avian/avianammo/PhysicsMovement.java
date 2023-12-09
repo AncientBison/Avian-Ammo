@@ -15,12 +15,15 @@ public class PhysicsMovement implements Movement {
     private double forceHorizontal;
     private double forceVertical;
 
-    public record SpeedLimits(double maxHorizontalSpeed, double maxVerticalSpeedUp, double maxVerticalSpeedDown) {};
+    private final int size;
 
-    PhysicsMovement(Position initialPosition, SpeedLimits speedLimits, double mass) {
+    public record SpeedLimits(double maxHorizontalSpeed, double maxVerticalSpeedUp, double maxVerticalSpeedDown) {}
+
+    PhysicsMovement(Position initialPosition, SpeedLimits speedLimits, double mass, int size) {
         this.position = initialPosition;
         this.speedLimits = speedLimits;
         this.mass = mass;
+        this.size = size;
     }
 
     public void tick(double deltaTime) {
@@ -32,7 +35,7 @@ public class PhysicsMovement implements Movement {
         forceHorizontal = 0;  // Force has been applied
         velocityHorizontal += accelerationHorizontal * deltaTime;
         velocityHorizontal = speedLimits.maxHorizontalSpeed() * Math.signum(velocityHorizontal) * (1 - Math.pow(Math.E, -Math.abs(velocityHorizontal)));
-        return Math.clamp(position.x() + velocityHorizontal * PIXELS_PER_METER, PhysicsConstants.MIN_X, PhysicsConstants.MAX_X);
+        return Math.clamp(position.x() + velocityHorizontal * PIXELS_PER_METER, PhysicsConstants.MIN_X, PhysicsConstants.MAX_X - size);
     }
     
     private double calculateNewY(double deltaTime) {
@@ -41,7 +44,7 @@ public class PhysicsMovement implements Movement {
         velocityVertical += accelerationVertical * deltaTime;
         double speedLimit = (velocityVertical > 0 ? speedLimits.maxVerticalSpeedUp() : speedLimits.maxVerticalSpeedDown());
         velocityVertical = speedLimit * Math.signum(velocityVertical) * (1 - Math.pow(Math.E, -Math.abs(velocityVertical)));
-        return Math.clamp(position.y() + velocityVertical * PIXELS_PER_METER, PhysicsConstants.MIN_Y, PhysicsConstants.MAX_Y);
+        return Math.clamp(position.y() + velocityVertical * PIXELS_PER_METER, PhysicsConstants.MIN_Y, PhysicsConstants.MAX_Y - size);
     }
 
     public void addHorizontalForce(double force) {
