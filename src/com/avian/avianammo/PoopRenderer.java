@@ -8,11 +8,13 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
+import static avianammo.ImageHelpers.toCompatibleImage;
+
 public class PoopRenderer extends Renderer {
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
-    private Movement movement;
+    private final Movement movement;
 
     public void render(Graphics2D graphics) {
         Position position = movement.getPosition();

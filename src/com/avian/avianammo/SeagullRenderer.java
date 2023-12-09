@@ -7,17 +7,19 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import static avianammo.ImageHelpers.toCompatibleImage;
+
 public class SeagullRenderer extends Renderer {
 
     private static final double SEAGULL_FLAP_TIME = 0.1;
 
-    private BufferedImage seagullPreflapLeft;
-    private BufferedImage seagullPreflapRight;
+    private final BufferedImage seagullPreflapLeft;
+    private final BufferedImage seagullPreflapRight;
     
-    private BufferedImage seagullPostflapLeft;
-    private BufferedImage seagullPostflapRight;
+    private final BufferedImage seagullPostflapLeft;
+    private final BufferedImage seagullPostflapRight;
 
-    private Movement movement;
+    private final Movement movement;
     private double flapDuration = -1;
     private Direction lastDirection = Direction.RIGHT;
     boolean directionOverride;
