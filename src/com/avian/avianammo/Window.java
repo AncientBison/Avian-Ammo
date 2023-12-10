@@ -1,8 +1,10 @@
 package avianammo;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 import avianammo.networking.Client;
 import avianammo.networking.GameSocket;
@@ -23,27 +25,25 @@ public class Window extends JFrame {
         this.setSize(1024, 1024);
         this.setLocationRelativeTo(null);
 
-        setVisible(false);
+        CountDownLatch gameRoleLatch = new CountDownLatch(1);
 
-        home = new HomePage();
+        home = new HomePage(gameRoleLatch);
         add(home);
-
-        home.awaitComponentsLoad();
 
         setVisible(true);
 
-        loadGame(home.awaitGameRoleChoice());
+        gameRoleLatch.await();
+
+        loadAndPlayGame(home.awaitGameRoleChoice());
     }
 
-    public void loadGame(GameRole role) throws IOException {
+    public void loadAndPlayGame(GameRole role) throws IOException, InterruptedException {
         remove(home);
 
         WaitingPage waitingPage = new WaitingPage();
         add(waitingPage);
 
-        waitingPage.awaitComponentsLoad();
-
-        setVisible(true);
+        SwingUtilities.updateComponentTreeUI(this);
 
         GameSocket gameSocket;
 
@@ -61,27 +61,20 @@ public class Window extends JFrame {
             initialPosition = Seagull.OPPONENT_DEFAULT_POSITION;
             initialDirection = Seagull.OPPONENT_DEFAULT_DIRECTION;
         }
+        // Game socket now connected
 
         gameSocket.listenForPackets();
 
         gameSocket.sendReady();
 
-        remove(waitingPage);
+        gameSocket.awaitGameState(GameState.COUNTING_DOWN);
 
-        while (gameSocket.getGameState() != GameState.COUNTING_DOWN) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        remove(waitingPage);
 
         TimerPage timerPage = new TimerPage(3);
         add(timerPage);
 
-        timerPage.awaitComponentsLoad();
-
-        setVisible(true);
+        SwingUtilities.updateComponentTreeUI(this);
 
         for(int i = 3; i > 0; i--) {
             try {
@@ -91,34 +84,21 @@ public class Window extends JFrame {
             }
 
             timerPage.countOneSecond();
-            setVisible(true);
         }
 
         remove(timerPage);
 
-        gameSocket.startPlay();
-
         Game game = new Game(this, gameSocket, initialPosition, initialDirection);
         game.start();
 
-        setVisible(true); // Repaints with new elements
+        gameSocket.startPlay();
 
-        while (gameSocket.getGameState() != GameState.PLAYING) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        gameSocket.awaitGameStateChangeFrom(GameState.PLAYING);
 
-        while (gameSocket.getGameState() == GameState.PLAYING) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        game.stop();
 
+        remove(game.getCanvas());
+        
         // Wait for all extra packets to come through
         try {
             Thread.sleep(150);
@@ -126,12 +106,8 @@ public class Window extends JFrame {
             e.printStackTrace();
         }
 
-        remove(game.getCanvas());
-
         GameResultsPage resultsPage = new GameResultsPage(gameSocket.getGameState());
         add(resultsPage);
-
-        resultsPage.awaitComponentsLoad();
 
         setVisible(true);
     }

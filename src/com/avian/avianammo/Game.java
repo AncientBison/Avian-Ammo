@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
+import javax.swing.SwingUtilities;
+
 import avianammo.networking.GameSocket;
 
 import java.awt.KeyboardFocusManager;
@@ -56,6 +58,8 @@ public class Game {
         canvas.setDoubleBuffered(true);
 
         window.add(canvas);
+        
+        SwingUtilities.updateComponentTreeUI(window);
     }
 
     public void start() {

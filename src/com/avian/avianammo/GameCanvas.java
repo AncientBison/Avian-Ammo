@@ -20,16 +20,17 @@ import static avianammo.ImageHelpers.toCompatibleImage;
 public class GameCanvas extends JPanel {
     private final transient List<Entity> entities;
     private final BufferedImage background;
-
+  
     public GameCanvas(List<Entity> entities) throws IOException {
-        setMinimumSize(new Dimension(500, 500));
+
         this.entities = entities;
 
         background = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/game-background.png")));
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         if (entities == null) {
             return;
         }

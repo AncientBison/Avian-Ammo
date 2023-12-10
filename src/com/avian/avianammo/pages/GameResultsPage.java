@@ -17,9 +17,9 @@ public class GameResultsPage extends AbstractPage {
     private transient Controls controls = new Controls();
     
     public GameResultsPage(GameState gameState) throws IOException {
-        super(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))));
+        super(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))), false);
         this.gameState = gameState;
-        
+        drawComponents();
     }
 
     @Override
