@@ -1,9 +1,6 @@
 package avianammo;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import javax.swing.JFrame;
 
@@ -79,28 +76,22 @@ public class Window extends JFrame {
             }
         }
 
-        TimerPage timerPage = new TimerPage(3); 
-        
-        try (ScheduledExecutorService timer = Executors.newScheduledThreadPool(1)) {
+        TimerPage timerPage = new TimerPage(3);
+        add(timerPage);
 
-            add(timerPage);
+        timerPage.awaitComponentsLoad();
 
-            timerPage.awaitComponentsLoad();
+        setVisible(true);
 
-            setVisible(true);
-
-            timer.scheduleAtFixedRate(() -> {
-                timerPage.countOneSecond();
-                setVisible(true);
-            }, 1, 1, TimeUnit.SECONDS);
-
+        for(int i = 3; i > 0; i--) {
             try {
-                Thread.sleep(3000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            timer.shutdown();
+            timerPage.countOneSecond();
+            setVisible(true);
         }
 
         remove(timerPage);
