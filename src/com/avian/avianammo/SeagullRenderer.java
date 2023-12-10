@@ -22,7 +22,8 @@ public class SeagullRenderer extends Renderer {
     private final BufferedImage seagullSwimLeft;
     private final BufferedImage seagullSwimRight;
 
-    private final BufferedImage heart;
+    private final BufferedImage heartRed;
+    private final BufferedImage heartBlue;
 
     private final Movement movement;
     private double flapDuration = -1;
@@ -45,14 +46,17 @@ public class SeagullRenderer extends Renderer {
 
         seagullSwimRight = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_swim_right.png")));
 
-        heart = ImageTools.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/heart.png")));
-    
+        heartRed = ImageTools.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/heart.png")));
+        heartBlue = ImageTools.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/heart_blue.png")));
+
         currentImage = seagullPreflapRight;
     }
 
     public void render(Graphics2D graphics) {
         Position position = movement.getPosition();
         updateCurrentAnimation();
+    
+        BufferedImage heart = (movement instanceof PhysicsMovement) ? heartRed : heartBlue;
 
         for (int i = 0; i < seagull.getHealth(); i++) {
             graphics.drawImage(heart, ((int) position.x() - heart.getWidth() / 2) + ((i - 1) * 30), ((int) position.y() - heart.getHeight() / 2 ) - 40, null);
