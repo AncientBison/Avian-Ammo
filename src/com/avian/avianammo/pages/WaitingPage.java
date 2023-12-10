@@ -1,6 +1,5 @@
 package avianammo.pages;
 
-import avianammo.Controls;
 import avianammo.ImageHelpers;
 import avianammo.PhysicsConstants;
 
