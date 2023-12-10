@@ -25,8 +25,9 @@ public class Window extends JFrame {
     public Window() throws IOException, InterruptedException {
         super("Avian Ammo");
 
-        this.setSize(1024, 1024);
-        this.setLocationRelativeTo(null);
+        setSize(1024, 1024);
+        setLocationRelativeTo(null);
+        setResizable(false);
 
         setVisible(true);
 
