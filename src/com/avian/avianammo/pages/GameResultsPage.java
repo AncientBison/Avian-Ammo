@@ -58,7 +58,7 @@ public class GameResultsPage extends AbstractPage {
             remove(restartLabel);
         }
 
-        restartLabel = new JLabel("Restarting in " + Math.max(resultsTimeLeft, 0) + " seconds");
+        restartLabel = new JLabel("Restarting in " + Math.max(resultsTimeLeft, 0));
         restartLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
         restartLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
 
