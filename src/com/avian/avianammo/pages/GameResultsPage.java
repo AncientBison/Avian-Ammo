@@ -38,11 +38,11 @@ public class GameResultsPage extends AbstractPage {
 
         add(label, BorderLayout.CENTER);
 
-        JLabel continueLabel = new JLabel("Restarting in 10 seconds");
-        continueLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
-        continueLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+        JLabel restartLabel = new JLabel("Restarting in 10 seconds");
+        restartLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
+        restartLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
 
-        add(continueLabel, BorderLayout.CENTER);
+        add(restartLabel, BorderLayout.CENTER);
 
         new java.util.Timer().schedule(
                 new java.util.TimerTask() {
@@ -52,6 +52,5 @@ public class GameResultsPage extends AbstractPage {
                     }
                 },
                 RESULTS_VISIBLE_SECONDS * 1000);
-
     }
 }
