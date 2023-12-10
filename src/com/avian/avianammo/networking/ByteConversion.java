@@ -2,8 +2,7 @@ package avianammo.networking;
 
 public class ByteConversion {
 
-    private ByteConversion() {
-    };
+    private ByteConversion() {}
 
     public static byte[] doubleToBytes(double d) {
         byte[] output = new byte[8];

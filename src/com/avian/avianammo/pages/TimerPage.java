@@ -1,6 +1,6 @@
 package avianammo.pages;
 
-import avianammo.ImageHelpers;
+import avianammo.ImageTools;
 import avianammo.PhysicsConstants;
 
 import javax.imageio.ImageIO;
@@ -14,7 +14,7 @@ public class TimerPage extends AbstractPage {
     private JLabel timeLabel;
 
     public TimerPage(int startTimeLeft) throws IOException {
-        super(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))), false);
+        super(ImageTools.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))), false);
 
         secondsLeft = startTimeLeft;
 

@@ -3,7 +3,10 @@ package avianammo;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class ImageHelpers {
+public class ImageTools {
+
+    private ImageTools() {}
+
     public static BufferedImage toCompatibleImage(BufferedImage image) {
         // obtain the current system graphical settings
         GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()

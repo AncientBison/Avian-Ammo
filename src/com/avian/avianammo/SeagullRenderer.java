@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import static avianammo.ImageHelpers.toCompatibleImage;
+import static avianammo.ImageTools.toCompatibleImage;
 
 public class SeagullRenderer extends Renderer {
 
@@ -45,7 +45,7 @@ public class SeagullRenderer extends Renderer {
 
         seagullSwimRight = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_swim_right.png")));
 
-        heart = ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/heart.png")));
+        heart = ImageTools.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/heart.png")));
     
         currentImage = seagullPreflapRight;
     }

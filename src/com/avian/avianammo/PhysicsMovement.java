@@ -34,8 +34,8 @@ public class PhysicsMovement implements Movement {
         double accelerationHorizontal = (forceHorizontal / mass);
         forceHorizontal = 0;  // Force has been applied
         velocityHorizontal += accelerationHorizontal * deltaTime;
-        velocityHorizontal = speedLimits.maxHorizontalSpeed() * Math.signum(velocityHorizontal) * (1 - Math.pow(Math.E, -Math.abs(velocityHorizontal)));
-        return Math.clamp(position.x() + velocityHorizontal * PIXELS_PER_METER, PhysicsConstants.MIN_X, PhysicsConstants.MAX_X - size);
+        velocityHorizontal = speedLimits.maxHorizontalSpeed() * Math.signum(velocityHorizontal) * (1 - Math.pow(Math.E, - Math.abs(velocityHorizontal)));
+        return Math.clamp(position.x() + velocityHorizontal * PIXELS_PER_METER, PhysicsConstants.MIN_X, PhysicsConstants.MAX_X - size); //NOSONAR
     }
     
     private double calculateNewY(double deltaTime) {
@@ -44,7 +44,7 @@ public class PhysicsMovement implements Movement {
         velocityVertical += accelerationVertical * deltaTime;
         double speedLimit = (velocityVertical > 0 ? speedLimits.maxVerticalSpeedUp() : speedLimits.maxVerticalSpeedDown());
         velocityVertical = speedLimit * Math.signum(velocityVertical) * (1 - Math.pow(Math.E, -Math.abs(velocityVertical)));
-        return Math.clamp(position.y() + velocityVertical * PIXELS_PER_METER, PhysicsConstants.MIN_Y, PhysicsConstants.MAX_Y - size);
+        return Math.clamp(position.y() + velocityVertical * PIXELS_PER_METER, PhysicsConstants.MIN_Y, PhysicsConstants.MAX_Y - size); //NOSONAR
     }
 
     public void addHorizontalForce(double force) {
@@ -60,6 +60,6 @@ public class PhysicsMovement implements Movement {
     }
 
     public Direction getDirection() {
-        return forceHorizontal > 0 ? Direction.RIGHT : forceHorizontal < 0 ? Direction.LEFT : Direction.CENTER;
+        return forceHorizontal > 0 ? Direction.RIGHT : forceHorizontal < 0 ? Direction.LEFT : Direction.CENTER; //NOSONAR
     }
 }

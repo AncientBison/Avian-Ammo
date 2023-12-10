@@ -92,8 +92,8 @@ public class Window extends JFrame {
         for(int i = 3; i > 0; i--) {
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException e) { //NOSONAR
+                // Intentionally ignore
             }
             timerPage.countOneSecond();
 
@@ -116,8 +116,8 @@ public class Window extends JFrame {
         // Wait for all extra packets to come through
         try {
             Thread.sleep(150);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException e) { //NOSONAR
+            // Intentionally ignore
         }
 
         GameResultsPage resultsPage = new GameResultsPage(gameSocket.getGameState(), gameSocket);

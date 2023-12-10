@@ -13,7 +13,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import static avianammo.ImageHelpers.toCompatibleImage;
+import static avianammo.ImageTools.toCompatibleImage;
 
 public class GameCanvas extends JPanel {
     private final transient List<Entity> entities;
@@ -46,6 +46,6 @@ public class GameCanvas extends JPanel {
                 ((Seagull)entity).renderPoops(graphics);
             }
         }
-        Toolkit.getDefaultToolkit().sync();
+        Toolkit.getDefaultToolkit().sync(); // Increases framerate
     }
 }

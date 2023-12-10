@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 import avianammo.GameRole;
-import avianammo.ImageHelpers;
+import avianammo.ImageTools;
 import avianammo.PhysicsConstants;
 
 public class HomePage extends AbstractPage {
@@ -21,15 +21,15 @@ public class HomePage extends AbstractPage {
     private int port;
 
     public HomePage(CountDownLatch gameRoleLatch) throws IOException {
-        super(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))));
+        super(ImageTools.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))));
 
         this.gameRoleLatch = gameRoleLatch;
     }
 
     @Override
     protected void drawComponents() throws IOException {
-        ImageIcon joinIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/join-button.png"))));
-        ImageIcon hostIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/host-button.png"))));
+        ImageIcon joinIcon = new ImageIcon(ImageTools.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/join-button.png"))));
+        ImageIcon hostIcon = new ImageIcon(ImageTools.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/host-button.png"))));
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 44, 0));
 
@@ -77,6 +77,7 @@ public class HomePage extends AbstractPage {
         boolean foundColon = false;
         StringBuilder ipInput = new StringBuilder();
 
+        // TODO: Replace with String.split
         for (int i = 0; i < address.length(); i++) {
             if (address.charAt(i) == ':') {
                 foundColon = true;

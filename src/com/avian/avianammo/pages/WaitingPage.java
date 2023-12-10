@@ -1,6 +1,6 @@
 package avianammo.pages;
 
-import avianammo.ImageHelpers;
+import avianammo.ImageTools;
 import avianammo.PhysicsConstants;
 
 import javax.imageio.ImageIO;
@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class WaitingPage extends AbstractPage {
     public WaitingPage() throws IOException {
-        super(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))));
+        super(ImageTools.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))));
     }
 
     @Override

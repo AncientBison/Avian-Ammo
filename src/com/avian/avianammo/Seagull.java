@@ -17,9 +17,10 @@ public class Seagull extends Entity {
     public static final double POOP_COLLISION_RADIUS_UP = 10;
     public static final double POOP_COLLISION_RADIUS_DOWN = 10;
 
-public static final Position DEFAULT_POSITION = new Position(50, 350);
+    public static final Position DEFAULT_POSITION = new Position(50, 350);
     public static final Direction DEFAULT_DIRECTION = Direction.RIGHT;
-    public static final Position OPPONENT_DEFAULT_POSITION = new Position(PhysicsConstants.MAX_X - (50 + (PhysicsConstants.SEAGULL_SIZE / 2.0)), 350);
+    public static final Position OPPONENT_DEFAULT_POSITION = new Position(
+            PhysicsConstants.MAX_X - (50 + (PhysicsConstants.SEAGULL_SIZE / 2.0)), 350);
     public static final Direction OPPONENT_DEFAULT_DIRECTION = Direction.LEFT;
 
     public static final double HEAT_START_HEIGHT = 275;
@@ -107,7 +108,8 @@ public static final Position DEFAULT_POSITION = new Position(50, 350);
 
     public void createPoop() throws IOException {
         Poop poop = Poop.createPhysicsPoop(
-            new Position(movement.getPosition().x() + POOP_OFFSET.x(), movement.getPosition().y() + POOP_OFFSET.y()));
+                new Position(movement.getPosition().x() + POOP_OFFSET.x(),
+                        movement.getPosition().y() + POOP_OFFSET.y()));
         poops.put(poop.getId(), poop);
         timeUntilPoopAllowed = TIME_BETWEEN_POOPS;
     }
@@ -167,14 +169,13 @@ public static final Position DEFAULT_POSITION = new Position(50, 350);
     }
 
     public Poop getFirstIntersectingPoop(Collection<Poop> poops) {
-        
+
         for (Poop poop : poops) {
 
-            if (getPosition().x() > poop.getPosition().x() - POOP_COLLISION_RADIUS_LEFT && 
-                getPosition().x() < poop.getPosition().x() + POOP_COLLISION_RADIUS_RIGHT &&
-                getPosition().y() > poop.getPosition().y() - POOP_COLLISION_RADIUS_UP &&
-                getPosition().y() < poop.getPosition().y() + POOP_COLLISION_RADIUS_DOWN
-            ) {
+            if (getPosition().x() > poop.getPosition().x() - POOP_COLLISION_RADIUS_LEFT &&
+                    getPosition().x() < poop.getPosition().x() + POOP_COLLISION_RADIUS_RIGHT &&
+                    getPosition().y() > poop.getPosition().y() - POOP_COLLISION_RADIUS_UP &&
+                    getPosition().y() < poop.getPosition().y() + POOP_COLLISION_RADIUS_DOWN) {
                 return poop;
             }
         }

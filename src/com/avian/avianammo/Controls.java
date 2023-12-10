@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Controls {
-    private static int ATTACK_KEY = KeyEvent.VK_SPACE;
-    private static int FLY_LEFT_KEY = KeyEvent.VK_LEFT;
-    private static int FLY_RIGHT_KEY = KeyEvent.VK_RIGHT;
-    private static int FALP_KEY = KeyEvent.VK_UP;
+    private static final int ATTACK_KEY = KeyEvent.VK_SPACE;
+    private static final int FLY_LEFT_KEY = KeyEvent.VK_LEFT;
+    private static final int FLY_RIGHT_KEY = KeyEvent.VK_RIGHT;
+    private static final int FLAP_KEY = KeyEvent.VK_UP;
     
     Map<Integer, KeyState> keys = new HashMap<>();
 
@@ -16,7 +16,7 @@ public class Controls {
         keys.put(ATTACK_KEY, new KeyState());
         keys.put(FLY_LEFT_KEY, new KeyState());
         keys.put(FLY_RIGHT_KEY, new KeyState());
-        keys.put(FALP_KEY, new KeyState());
+        keys.put(FLAP_KEY, new KeyState());
     }
 
     public void handleKeyEvent(KeyEvent e) {
@@ -41,7 +41,7 @@ public class Controls {
     }
 
     public KeyState getUp() {
-        return keys.get(FALP_KEY);
+        return keys.get(FLAP_KEY);
     }
 
     public KeyState getPoop() {

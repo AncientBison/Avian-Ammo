@@ -1,6 +1,6 @@
 package avianammo.pages;
 
-import avianammo.ImageHelpers;
+import avianammo.ImageTools;
 import avianammo.PhysicsConstants;
 import avianammo.networking.GameSocket;
 import avianammo.networking.GameSocket.GameState;
@@ -14,11 +14,11 @@ import java.io.IOException;
 public class GameResultsPage extends AbstractPage {
 
     private final GameState gameState;
-    private final GameSocket socket;
+    private final transient GameSocket socket;
     private static final int RESULTS_VISIBLE_SECONDS = 10;
 
     public GameResultsPage(GameState gameState, GameSocket socket) throws IOException {
-        super(ImageHelpers.toCompatibleImage(
+        super(ImageTools.toCompatibleImage(
                 ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))), false);
         this.gameState = gameState;
         this.socket = socket;
@@ -51,6 +51,6 @@ public class GameResultsPage extends AbstractPage {
                         socket.setGameState(GameState.WAITING_FOR_CONNECTION);
                     }
                 },
-                RESULTS_VISIBLE_SECONDS * 1000);
+                RESULTS_VISIBLE_SECONDS * 1000l);
     }
 }

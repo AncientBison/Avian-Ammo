@@ -8,7 +8,7 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import static avianammo.ImageHelpers.toCompatibleImage;
+import static avianammo.ImageTools.toCompatibleImage;
 
 public class PoopRenderer extends Renderer {
 

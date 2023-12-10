@@ -6,15 +6,15 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public abstract class AbstractPage extends JPanel {
-    protected transient BufferedImage background;
+    protected transient BufferedImage backgroundImage;
 
-    protected AbstractPage(BufferedImage background) throws IOException {
-        this.background = background;
+    protected AbstractPage(BufferedImage backgroundImage) throws IOException {
+        this.backgroundImage = backgroundImage;
         drawComponents();
     }
 
-        protected AbstractPage(BufferedImage background, boolean drawComponents) throws IOException {
-        this.background = background;
+        protected AbstractPage(BufferedImage backgroundImage, boolean drawComponents) throws IOException {
+        this.backgroundImage = backgroundImage;
         if (drawComponents) {
             drawComponents();
         }
@@ -24,9 +24,9 @@ public abstract class AbstractPage extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (background != null) {
+        if (backgroundImage != null) {
             Graphics2D graphics = (Graphics2D) g;
-            graphics.drawImage(background, 0, 0, null);
+            graphics.drawImage(backgroundImage, 0, 0, null);
         }
     }
 
