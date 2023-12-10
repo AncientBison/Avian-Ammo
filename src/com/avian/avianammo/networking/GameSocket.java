@@ -17,7 +17,7 @@ import avianammo.Position;
 import avianammo.RemoteMovement;
 import avianammo.Seagull;
 
-public class GameSocket {
+public class GameSocket implements AutoCloseable {
 
     private Socket socket;
     private OutputStream outputStream;
@@ -28,6 +28,8 @@ public class GameSocket {
 
     private Map<CountDownLatch, GameState> gameStateChangeLatches = new HashMap<>();
     private Map<CountDownLatch, GameState> gameStateChangeFromLatches = new HashMap<>();
+
+    private boolean listening;
 
     public GameSocket(Socket socket) throws IOException {
         this.socket = socket;
@@ -173,10 +175,15 @@ public class GameSocket {
     }
 
     public void listenForPackets() {
+        listening = true;
         packetListenerThread = new Thread(() -> {
-            while (true) {
+            while (listening) {
                 try {
-                    byte packetType = inputStream.readNBytes(1)[0];
+                    byte[] bytesRead = inputStream.readNBytes(1);
+                    if (bytesRead.length == 0) {
+                        continue;
+                    }
+                    byte packetType = bytesRead[0];
                     switch (packetType) {
                     case READY:
                         receivedReady();
@@ -193,7 +200,10 @@ public class GameSocket {
                         
                     }
                 } catch (IOException e) {
-                    throw new IllegalStateException("Socket is closed", e);
+                    if (listening) {
+                        throw new IllegalStateException("Socket is closed", e);
+                    }
+                    // Socket closing is expected
                 }
             }
         });
@@ -205,7 +215,9 @@ public class GameSocket {
         return latestInformationData;
     }
 
-    public void close() throws IOException {
+    @Override
+    public void close() throws IOException, InterruptedException {
+        listening = false;
         packetListenerThread.interrupt();
         socket.close();
     }
