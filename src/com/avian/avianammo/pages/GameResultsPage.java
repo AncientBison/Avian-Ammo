@@ -1,6 +1,5 @@
 package avianammo.pages;
 
-import avianammo.Controls;
 import avianammo.ImageHelpers;
 import avianammo.PhysicsConstants;
 import avianammo.networking.GameSocket;
@@ -14,8 +13,8 @@ import java.io.IOException;
 
 public class GameResultsPage extends AbstractPage {
 
-    private GameState gameState;
-    private GameSocket socket;
+    private final GameState gameState;
+    private final GameSocket socket;
     private static final int RESULTS_VISIBLE_SECONDS = 10;
 
     public GameResultsPage(GameState gameState, GameSocket socket) throws IOException {
@@ -39,7 +38,7 @@ public class GameResultsPage extends AbstractPage {
 
         add(label, BorderLayout.CENTER);
 
-        JLabel continueLabel = new JLabel("Press <Space> to play again");
+        JLabel continueLabel = new JLabel("Restarting in 10 seconds");
         continueLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
         continueLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
 
@@ -52,7 +51,7 @@ public class GameResultsPage extends AbstractPage {
                         socket.setGameState(GameState.WAITING_FOR_CONNECTION);
                     }
                 },
-                RESULTS_VISIBLE_SECONDS);
+                RESULTS_VISIBLE_SECONDS * 1000);
 
     }
 }
