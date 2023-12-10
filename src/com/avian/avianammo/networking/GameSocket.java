@@ -29,6 +29,8 @@ public class GameSocket implements AutoCloseable {
     private Map<CountDownLatch, GameState> gameStateChangeLatches = new HashMap<>();
     private Map<CountDownLatch, GameState> gameStateChangeFromLatches = new HashMap<>();
 
+    private boolean listening;
+
     public GameSocket(Socket socket) throws IOException {
         this.socket = socket;
         outputStream = socket.getOutputStream();
@@ -173,8 +175,9 @@ public class GameSocket implements AutoCloseable {
     }
 
     public void listenForPackets() {
+        listening = true;
         packetListenerThread = new Thread(() -> {
-            while (true) {
+            while (listening) {
                 try {
                     byte packetType = inputStream.readNBytes(1)[0];
                     switch (packetType) {
@@ -206,8 +209,9 @@ public class GameSocket implements AutoCloseable {
     }
 
     @Override
-    public void close() throws IOException {
-        packetListenerThread.interrupt();
+    public void close() throws IOException, InterruptedException {
+        listening = false;
+        packetListenerThread.join();
         socket.close();
     }
 
