@@ -25,9 +25,12 @@ public class GameLoop extends TimerTask  {
     @Override
     public void run() {
         seagull.tick(1.0 / GameLoop.TICKS_PER_SECOND);
-        if (socket.getLatestInformationData() != null && opponentSeagull.getMovement() instanceof RemoteMovement movement) {
-            updateOpponentSeagull(movement);
+        if (socket.getLatestInformationData() != null) {
+            if (opponentSeagull.getMovement() instanceof RemoteMovement movement) {
+                updateOpponentSeagull(movement);
+            }
             updateOpponentPoops();
+            updateSeagullHealth();
         }
 
         if (seagull.getMovement() instanceof PhysicsMovement movement) {
@@ -93,8 +96,6 @@ public class GameLoop extends TimerTask  {
             opponentSeagull.stopFlap();
         }
 
-        opponentSeagull.setHealth(socket.getLatestInformationData().opponentHealth());
-
         movement.setDirection(animationDirection);
     }
 
@@ -120,5 +121,9 @@ public class GameLoop extends TimerTask  {
                 clientPoops.put(networkPoop.getId(), networkPoop);
             }
         }
+    }
+
+    private void updateSeagullHealth() {
+        seagull.setHealth(socket.getLatestInformationData().seagullHealth());
     }
 }

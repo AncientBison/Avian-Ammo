@@ -99,7 +99,7 @@ public class GameSocket {
         }
     }
 
-    public record NetworkInformationData(boolean opponentFlapping, Direction opponentAnimationDirection, double opponentX, double opponentY, byte opponentHealth, Map<Integer, Poop> poops) {}
+    public record NetworkInformationData(boolean opponentFlapping, Direction opponentAnimationDirection, double opponentX, double opponentY, byte seagullHealth, Map<Integer, Poop> poops) {}
 
     private void receivedInformation(byte[] data) throws IOException {
         int offset = 0;
@@ -107,7 +107,7 @@ public class GameSocket {
         boolean opponentFlapping = (flags & 1) == 1;
         Direction opponentAnimationDirection = ((flags & 0xff) & (1 << 1)) != 0 ? Direction.LEFT : Direction.RIGHT;
         offset += 1;
-        byte opponentHealth = data[offset];
+        byte seagullHealth = data[offset];
         offset += 1;
         double opponentX = ByteConversion.bytesToDouble(data, offset);
         offset += 8;
@@ -127,7 +127,7 @@ public class GameSocket {
             poops.put(id, Poop.createRemotePoop(new RemoteMovement(new Position(poopX, poopY), Direction.CENTER), id));
         }
 
-        latestInformationData = new NetworkInformationData(opponentFlapping, opponentAnimationDirection, opponentX, opponentY, opponentHealth, poops);
+        latestInformationData = new NetworkInformationData(opponentFlapping, opponentAnimationDirection, opponentX, opponentY, seagullHealth, poops);
     }
 
     public void sendInformation(Seagull seagull, byte opponentHealth) throws IOException {
