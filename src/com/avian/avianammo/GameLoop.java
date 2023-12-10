@@ -35,8 +35,9 @@ public class GameLoop extends TimerTask  {
 
         if (seagull.getMovement() instanceof PhysicsMovement movement) {
             updateSeagullPosition(movement);
-            updateSeagullPoops();
         }
+
+        updateSeagullPoops();
 
         try {
             socket.sendInformation(seagull, opponentSeagull.getHealth());
