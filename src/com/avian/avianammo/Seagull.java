@@ -24,7 +24,7 @@ public class Seagull extends Entity {
     public static final Direction OPPONENT_DEFAULT_DIRECTION = Direction.LEFT;
 
     public static final double HEAT_START_HEIGHT = 275;
-    public static final double HEAT_MAX_TIME = 5;
+    public static final double HEAT_MAX_TIME = 3.5;
     public static final double HEAT_DISABLE_TIME = 4;
 
     public static final byte MAX_HEALTH = 3;
