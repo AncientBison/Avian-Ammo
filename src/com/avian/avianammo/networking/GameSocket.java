@@ -179,7 +179,11 @@ public class GameSocket implements AutoCloseable {
         packetListenerThread = new Thread(() -> {
             while (listening) {
                 try {
-                    byte packetType = inputStream.readNBytes(1)[0];
+                    byte[] bytesRead = inputStream.readNBytes(1);
+                    if (bytesRead.length == 0) {
+                        continue;
+                    }
+                    byte packetType = bytesRead[0];
                     switch (packetType) {
                     case READY:
                         receivedReady();
@@ -196,7 +200,10 @@ public class GameSocket implements AutoCloseable {
                         
                     }
                 } catch (IOException e) {
-                    throw new IllegalStateException("Socket is closed", e);
+                    if (listening) {
+                        throw new IllegalStateException("Socket is closed", e);
+                    }
+                    // Socket closing is expected
                 }
             }
         });
@@ -211,7 +218,7 @@ public class GameSocket implements AutoCloseable {
     @Override
     public void close() throws IOException, InterruptedException {
         listening = false;
-        packetListenerThread.join();
+        packetListenerThread.interrupt();
         socket.close();
     }
 
