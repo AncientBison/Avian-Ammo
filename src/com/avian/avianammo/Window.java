@@ -52,12 +52,12 @@ public class Window extends JFrame {
 
         if (role == GameRole.HOST) {
             Server server = new Server();
-            gameSocket = server.listen(4000);
+            gameSocket = server.listen(home.getPort());
             initialPosition = Seagull.DEFAULT_POSITION;
             initialDirection = Seagull.DEFAULT_DIRECTION;
         } else {
             Client client = new Client();
-            gameSocket = client.connect(4000);
+            gameSocket = client.connect(home.getIp(), home.getPort());
             initialPosition = Seagull.OPPONENT_DEFAULT_POSITION;
             initialDirection = Seagull.OPPONENT_DEFAULT_DIRECTION;
         }
