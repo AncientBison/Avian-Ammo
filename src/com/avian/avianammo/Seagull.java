@@ -17,9 +17,9 @@ public class Seagull extends Entity {
     public static final double POOP_COLLISION_RADIUS_UP = 10;
     public static final double POOP_COLLISION_RADIUS_DOWN = 10;
 
-    public static final Position DEFAULT_POSITION = new Position(50, 50);
+    public static final Position DEFAULT_POSITION = new Position(50, 350);
     public static final Direction DEFAULT_DIRECTION = Direction.RIGHT;
-    public static final Position OPPONENT_DEFAULT_POSITION = new Position(450, 50);
+    public static final Position OPPONENT_DEFAULT_POSITION = new Position(PhysicsConstants.MAX_X - 50, 350);
     public static final Direction OPPONENT_DEFAULT_DIRECTION = Direction.LEFT;
 
     public static final double HEAT_START_HEIGHT = 275;
