@@ -25,18 +25,22 @@ public class GameLoop extends TimerTask  {
     @Override
     public void run() {
         seagull.tick(1.0 / GameLoop.TICKS_PER_SECOND);
-        if (socket.getLatestInformationData() != null && opponentSeagull.getMovement() instanceof RemoteMovement movement) {
-            updateOpponentSeagull(movement);
+        if (socket.getLatestInformationData() != null) {
+            if (opponentSeagull.getMovement() instanceof RemoteMovement movement) {
+                updateOpponentSeagull(movement);
+            }
             updateOpponentPoops();
+            updateSeagullHealth();
         }
 
         if (seagull.getMovement() instanceof PhysicsMovement movement) {
             updateSeagullPosition(movement);
-            updateSeagullPoops();
         }
 
+        updateSeagullPoops();
+
         try {
-            socket.sendSeagullInformation(seagull);
+            socket.sendInformation(seagull, opponentSeagull.getHealth());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,8 +57,7 @@ public class GameLoop extends TimerTask  {
                     e.printStackTrace();
                 }
             }
-            seagull.setShouldSendHitOpponentMessage(true);
-            opponentSeagull.takeDamage(1);
+            opponentSeagull.takeDamage((byte) 1);
         }
     }
 
@@ -94,12 +97,7 @@ public class GameLoop extends TimerTask  {
             opponentSeagull.stopFlap();
         }
 
-        if (socket.getLatestInformationData().gotHit()) {
-            seagull.takeDamage(1);
-            socket.setGotHit(false);
-        }
-
-            movement.setDirection(animationDirection);
+        movement.setDirection(animationDirection);
     }
 
     private void updateOpponentPoops() {
@@ -124,5 +122,9 @@ public class GameLoop extends TimerTask  {
                 clientPoops.put(networkPoop.getId(), networkPoop);
             }
         }
+    }
+
+    private void updateSeagullHealth() {
+        seagull.setHealth(socket.getLatestInformationData().seagullHealth());
     }
 }

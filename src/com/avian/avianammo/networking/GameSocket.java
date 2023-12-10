@@ -99,14 +99,15 @@ public class GameSocket {
         }
     }
 
-    public record NetworkInformationData(boolean opponentFlapping, Direction opponentAnimationDirection, double opponentX, double opponentY, boolean gotHit, Map<Integer, Poop> poops) {}
+    public record NetworkInformationData(boolean opponentFlapping, Direction opponentAnimationDirection, double opponentX, double opponentY, byte seagullHealth, Map<Integer, Poop> poops) {}
 
     private void receivedInformation(byte[] data) throws IOException {
         int offset = 0;
         byte flags = data[0];
         boolean opponentFlapping = (flags & 1) == 1;
         Direction opponentAnimationDirection = ((flags & 0xff) & (1 << 1)) != 0 ? Direction.LEFT : Direction.RIGHT;
-        boolean gotHit = ((flags & 0xff) & (1 << 2)) != 0;
+        offset += 1;
+        byte seagullHealth = data[offset];
         offset += 1;
         double opponentX = ByteConversion.bytesToDouble(data, offset);
         offset += 8;
@@ -126,14 +127,15 @@ public class GameSocket {
             poops.put(id, Poop.createRemotePoop(new RemoteMovement(new Position(poopX, poopY), Direction.CENTER), id));
         }
 
-        latestInformationData = new NetworkInformationData(opponentFlapping, opponentAnimationDirection, opponentX, opponentY, gotHit, poops);
+        latestInformationData = new NetworkInformationData(opponentFlapping, opponentAnimationDirection, opponentX, opponentY, seagullHealth, poops);
     }
 
-    public void sendSeagullInformation(Seagull seagull) throws IOException {
+    public void sendInformation(Seagull seagull, byte opponentHealth) throws IOException {
         outputStream.write(INFORMATION);
 
         int dataSize = 0;
         dataSize += 1; // Flags
+        dataSize += 1; // Opponent health
         dataSize += 16; // Seagull x/y
         dataSize += 4; // Number of poops
         dataSize += (8 + 8 + 4) * seagull.getPoops().size(); // Poops time conceived, x/y
@@ -148,12 +150,9 @@ public class GameSocket {
             flags |= (1 << 1);
         }
 
-        if (seagull.shouldSendHitOpponentMessage()) {
-            flags |= (1 << 2);
-            seagull.setShouldSendHitOpponentMessage(false);
-        }
-
         outputStream.write(flags);
+
+        outputStream.write(opponentHealth);
 
         outputStream.write(ByteConversion.doubleToBytes(seagull.getPosition().x()));
         outputStream.write(ByteConversion.doubleToBytes(seagull.getPosition().y()));
@@ -204,16 +203,6 @@ public class GameSocket {
 
     public NetworkInformationData getLatestInformationData() {
         return latestInformationData;
-    }
-
-    public void setGotHit(boolean gotHit) {
-        latestInformationData = new NetworkInformationData(
-            latestInformationData.opponentFlapping(),
-            latestInformationData.opponentAnimationDirection(),
-            latestInformationData.opponentX(),
-            latestInformationData.opponentY(),
-            gotHit,
-            latestInformationData.poops);
     }
 
     public void close() throws IOException {
