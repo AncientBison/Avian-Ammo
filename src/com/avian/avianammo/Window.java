@@ -82,9 +82,9 @@ public class Window extends JFrame {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            SwingUtilities.updateComponentTreeUI(this);
-
             timerPage.countOneSecond();
+
+            SwingUtilities.updateComponentTreeUI(this);
         }
 
         remove(timerPage);
