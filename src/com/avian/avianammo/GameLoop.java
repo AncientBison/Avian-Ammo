@@ -36,7 +36,7 @@ public class GameLoop extends TimerTask  {
         }
 
         try {
-            socket.sendSeagullInformation(seagull);
+            socket.sendInformation(seagull, opponentSeagull.getHealth());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,8 +53,7 @@ public class GameLoop extends TimerTask  {
                     e.printStackTrace();
                 }
             }
-            seagull.setShouldSendHitOpponentMessage(true);
-            opponentSeagull.takeDamage(1);
+            opponentSeagull.takeDamage((byte) 1);
         }
     }
 
@@ -94,12 +93,9 @@ public class GameLoop extends TimerTask  {
             opponentSeagull.stopFlap();
         }
 
-        if (socket.getLatestInformationData().gotHit()) {
-            seagull.takeDamage(1);
-            socket.setGotHit(false);
-        }
+        opponentSeagull.setHealth(socket.getLatestInformationData().opponentHealth());
 
-            movement.setDirection(animationDirection);
+        movement.setDirection(animationDirection);
     }
 
     private void updateOpponentPoops() {
