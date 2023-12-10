@@ -19,6 +19,9 @@ public class SeagullRenderer extends Renderer {
     private final BufferedImage seagullPostflapLeft;
     private final BufferedImage seagullPostflapRight;
 
+    private final BufferedImage seagullSwimLeft;
+    private final BufferedImage seagullSwimRight;
+
     private final BufferedImage heart;
 
     private final Movement movement;
@@ -37,6 +40,10 @@ public class SeagullRenderer extends Renderer {
         seagullPostflapLeft = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_flap_left.png")));
 
         seagullPostflapRight = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_flap_right.png")));
+
+        seagullSwimLeft = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_swim_left.png")));
+
+        seagullSwimRight = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_swim_right.png")));
 
         heart = ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/heart.png")));
     
@@ -63,17 +70,18 @@ public class SeagullRenderer extends Renderer {
     protected void updateCurrentAnimation() {
         boolean flapping = flapDuration >= 0;
 
+        boolean swimming = movement.getPosition().y() >= PhysicsConstants.MAX_Y - PhysicsConstants.SEAGULL_SIZE;
         if (movement.getDirection() == Direction.RIGHT) {
-            currentImage = flapping ? seagullPostflapRight : seagullPreflapRight;
+            currentImage = swimming ? seagullSwimRight : (flapping ? seagullPostflapRight : seagullPreflapRight);
             lastDirection = Direction.RIGHT;
         } else if (movement.getDirection() == Direction.LEFT) {
-            currentImage = flapping ? seagullPostflapLeft : seagullPreflapLeft;
+            currentImage = swimming ? seagullSwimLeft : (flapping ? seagullPostflapLeft : seagullPreflapLeft);
             lastDirection = Direction.LEFT;
         // Seagull is not moving left or right
         } else if (lastDirection == Direction.RIGHT) {
-            currentImage = flapping ? seagullPostflapRight : seagullPreflapRight;
+            currentImage = swimming ? seagullSwimRight : (flapping ? seagullPostflapRight : seagullPreflapRight);
         } else {
-            currentImage = flapping ? seagullPostflapLeft : seagullPreflapLeft;
+            currentImage = swimming ? seagullSwimLeft : (flapping ? seagullPostflapLeft : seagullPreflapLeft);
         }
     }
 
