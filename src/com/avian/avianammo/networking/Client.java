@@ -2,11 +2,10 @@ package avianammo.networking;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Client {
-    public GameSocket connect(int port) throws UnknownHostException, IOException {
-        Socket socket = new Socket("localhost", port);
+    public GameSocket connect(String ip, int port) throws IOException {
+        Socket socket = new Socket(ip, port);
         System.out.println("Connection established");
         return new GameSocket(socket);
     }

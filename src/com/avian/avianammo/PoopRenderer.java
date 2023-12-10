@@ -40,5 +40,4 @@ public class PoopRenderer extends Renderer {
     protected void updateCurrentAnimation() {
         // Image does not update
     }
-    
 }

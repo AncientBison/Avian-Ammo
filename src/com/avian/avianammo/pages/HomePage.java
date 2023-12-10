@@ -16,6 +16,9 @@ public class HomePage extends AbstractPage {
     private boolean waitingForAction = true;
     private GameRole role = GameRole.NONE;
 
+    private String ip;
+    private int port;
+
     public HomePage() throws IOException {
         super(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))));
     }
@@ -36,6 +39,7 @@ public class HomePage extends AbstractPage {
         joinButton.setPreferredSize(buttonSize);
         joinButton.setBorder(emptyBorder);
         joinButton.addActionListener(e -> {
+            parseAddress(JOptionPane.showInputDialog(this,"Enter host's address"));
             waitingForAction = false;
             role = GameRole.CLIENT;
         });
@@ -46,6 +50,7 @@ public class HomePage extends AbstractPage {
         hostButton.setPreferredSize(buttonSize);
         hostButton.setBorder(emptyBorder);
         hostButton.addActionListener(e -> {
+            port = Integer.parseInt(JOptionPane.showInputDialog(this,"Enter port to listen on"));
             waitingForAction = false;
             role = GameRole.HOST;
         });
@@ -63,5 +68,34 @@ public class HomePage extends AbstractPage {
         }
 
         return role;
+    }
+
+    public void parseAddress(String address) {
+        boolean foundColon = false;
+        StringBuilder ipInput = new StringBuilder();
+
+        for (int i = 0; i < address.length(); i++) {
+            if (address.charAt(i) == ':') {
+                foundColon = true;
+                continue;
+            }
+
+            if (!foundColon) {
+                ipInput.append(address.charAt(i));
+            } else {
+                port = Integer.parseInt(address.substring(i));
+                break;
+            }
+        }
+
+        ip = ipInput.toString();
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

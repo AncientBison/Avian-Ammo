@@ -19,6 +19,9 @@ public class SeagullRenderer extends Renderer {
     private final BufferedImage seagullPostflapLeft;
     private final BufferedImage seagullPostflapRight;
 
+    private final BufferedImage seagullSwimLeft;
+    private final BufferedImage seagullSwimRight;
+
     private final BufferedImage heart;
 
     private final Movement movement;
@@ -38,18 +41,16 @@ public class SeagullRenderer extends Renderer {
 
         seagullPostflapRight = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_flap_right.png")));
 
+        seagullSwimLeft = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_swim_left.png")));
+
+        seagullSwimRight = toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/seagull_swim_right.png")));
+
         heart = ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/heart.png")));
     
         currentImage = seagullPreflapRight;
     }
 
     public void render(Graphics2D graphics) {
-        graphics.drawRect(
-            (int)(movement.getPosition().x() - Seagull.POOP_COLLISION_RADIUS_LEFT),
-            (int)(movement.getPosition().y() - Seagull.POOP_COLLISION_RADIUS_UP),
-            (int)(Seagull.POOP_COLLISION_RADIUS_RIGHT + Seagull.POOP_COLLISION_RADIUS_LEFT),
-            (int)(Seagull.POOP_COLLISION_RADIUS_DOWN + Seagull.POOP_COLLISION_RADIUS_UP)
-        );
         Position position = movement.getPosition();
         updateCurrentAnimation();
 
@@ -63,17 +64,18 @@ public class SeagullRenderer extends Renderer {
     protected void updateCurrentAnimation() {
         boolean flapping = flapDuration >= 0;
 
+        boolean swimming = movement.getPosition().y() >= PhysicsConstants.MAX_Y - PhysicsConstants.SEAGULL_SIZE;
         if (movement.getDirection() == Direction.RIGHT) {
-            currentImage = flapping ? seagullPostflapRight : seagullPreflapRight;
+            currentImage = swimming ? seagullSwimRight : (flapping ? seagullPostflapRight : seagullPreflapRight);
             lastDirection = Direction.RIGHT;
         } else if (movement.getDirection() == Direction.LEFT) {
-            currentImage = flapping ? seagullPostflapLeft : seagullPreflapLeft;
+            currentImage = swimming ? seagullSwimLeft : (flapping ? seagullPostflapLeft : seagullPreflapLeft);
             lastDirection = Direction.LEFT;
         // Seagull is not moving left or right
         } else if (lastDirection == Direction.RIGHT) {
-            currentImage = flapping ? seagullPostflapRight : seagullPreflapRight;
+            currentImage = swimming ? seagullSwimRight : (flapping ? seagullPostflapRight : seagullPreflapRight);
         } else {
-            currentImage = flapping ? seagullPostflapLeft : seagullPreflapLeft;
+            currentImage = swimming ? seagullSwimLeft : (flapping ? seagullPostflapLeft : seagullPreflapLeft);
         }
     }
 

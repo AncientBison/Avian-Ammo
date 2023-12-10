@@ -22,14 +22,24 @@ public class Seagull extends Entity {
     public static final Position OPPONENT_DEFAULT_POSITION = new Position(450, 50);
     public static final Direction OPPONENT_DEFAULT_DIRECTION = Direction.LEFT;
 
+    public static final double HEAT_START_HEIGHT = 275;
+    public static final double HEAT_MAX_TIME = 5;
+    public static final double HEAT_DISABLE_TIME = 4;
+
     public static final int MAX_HEALTH = 3;
 
     private Map<Integer, Poop> poops = new HashMap<>();
     private double timeUntilPoopAllowed = 0;
 
+    private double timeInHeat = 0;
+
     private int health = MAX_HEALTH;
 
     private final SeagullRenderer renderer;
+
+    private boolean sendHitOpponentMessage = false;
+
+    private double noControlTime = 0;
 
     private Seagull(Movement movement) throws IOException {
         super(movement);
@@ -76,6 +86,8 @@ public class Seagull extends Entity {
 
         renderer.tick(deltaTime);
         updateTimeUntilNextPoopAllowed(deltaTime);
+
+        updateTimeInHeat(deltaTime);
     }
 
     public void render(Graphics2D graphics) {
@@ -98,6 +110,24 @@ public class Seagull extends Entity {
             new Position(movement.getPosition().x() + POOP_OFFSET.x(), movement.getPosition().y() + POOP_OFFSET.y()));
         poops.put(poop.getId(), poop);
         timeUntilPoopAllowed = TIME_BETWEEN_POOPS;
+    }
+
+    public void updateTimeInHeat(double deltaTime) {
+        noControlTime = Math.max(noControlTime - deltaTime, 0);
+
+        if (getPosition().y() <= HEAT_START_HEIGHT) {
+            timeInHeat += deltaTime;
+            if (timeInHeat >= HEAT_MAX_TIME) {
+                noControlTime += HEAT_DISABLE_TIME;
+                timeInHeat = 0;
+            }
+        } else {
+            timeInHeat = 0;
+        }
+    }
+
+    public boolean canMove() {
+        return noControlTime == 0;
     }
 
     public Movement getMovement() {
@@ -124,8 +154,8 @@ public class Seagull extends Entity {
         renderer.stopFlap();
     }
 
-    public void setTotalDamage(int damage) {
-        this.health = Math.max(MAX_HEALTH - damage, 0);
+    public void takeDamage(int damage) {
+        this.health = Math.max(health - damage, 0);
     }
 
     public int getHealth() {
@@ -150,5 +180,13 @@ public class Seagull extends Entity {
         }
 
         return null;
+    }
+
+    public boolean shouldSendHitOpponentMessage() {
+        return sendHitOpponentMessage;
+    }
+
+    public void setShouldSendHitOpponentMessage(boolean shouldSend) {
+        this.sendHitOpponentMessage = shouldSend;
     }
 }
