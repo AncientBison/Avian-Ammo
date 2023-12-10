@@ -43,7 +43,6 @@ public class HomePage extends AbstractPage {
         joinButton.setBorder(emptyBorder);
         joinButton.addActionListener(e -> {
             parseAddress(JOptionPane.showInputDialog(this,"Enter host's address"));
-            waitingForAction = false;
             role = GameRole.CLIENT;
             gameRoleLatch.countDown();
         });
@@ -55,7 +54,6 @@ public class HomePage extends AbstractPage {
         hostButton.setBorder(emptyBorder);
         hostButton.addActionListener(e -> {
             port = Integer.parseInt(JOptionPane.showInputDialog(this,"Enter port to listen on"));
-            waitingForAction = false;
             role = GameRole.HOST;
             gameRoleLatch.countDown();
         });
