@@ -17,7 +17,7 @@ import avianammo.Position;
 import avianammo.RemoteMovement;
 import avianammo.Seagull;
 
-public class GameSocket {
+public class GameSocket implements AutoCloseable {
 
     private Socket socket;
     private OutputStream outputStream;
@@ -205,6 +205,7 @@ public class GameSocket {
         return latestInformationData;
     }
 
+    @Override
     public void close() throws IOException {
         packetListenerThread.interrupt();
         socket.close();

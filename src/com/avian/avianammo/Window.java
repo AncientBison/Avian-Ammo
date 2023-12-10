@@ -74,16 +74,31 @@ public class Window extends JFrame {
             initialPosition = Seagull.OPPONENT_DEFAULT_POSITION;
             initialDirection = Seagull.OPPONENT_DEFAULT_DIRECTION;
         }
+
         // Game socket now connected
+        try (gameSocket) {
+            gameSocket.listenForPackets();
 
-        gameSocket.listenForPackets();
+            gameSocket.sendReady();
 
-        gameSocket.sendReady();
+            gameSocket.awaitGameState(GameState.COUNTING_DOWN);
 
-        gameSocket.awaitGameState(GameState.COUNTING_DOWN);
+            remove(waitingPage);
 
-        remove(waitingPage);
+            play(initialPosition, initialDirection, gameSocket);
+        }
 
+        GameResultsPage resultsPage = new GameResultsPage(gameSocket.getGameState(), gameSocket);
+        add(resultsPage);
+
+        SwingUtilities.updateComponentTreeUI(this);
+
+        gameSocket.awaitGameState(GameState.WAITING_FOR_CONNECTION);
+
+        remove(resultsPage);
+    }
+
+    private void play(Position initialPosition, Direction initialDirection, GameSocket gameSocket) throws IOException, InterruptedException {
         TimerPage timerPage = new TimerPage(3);
         add(timerPage);
 
@@ -119,14 +134,5 @@ public class Window extends JFrame {
         } catch (InterruptedException e) { //NOSONAR
             // Intentionally ignore
         }
-
-        GameResultsPage resultsPage = new GameResultsPage(gameSocket.getGameState(), gameSocket);
-        add(resultsPage);
-
-        SwingUtilities.updateComponentTreeUI(this);
-
-        gameSocket.awaitGameState(GameState.WAITING_FOR_CONNECTION);
-
-        remove(resultsPage);
     }
 }
