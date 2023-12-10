@@ -121,6 +121,8 @@ public class Seagull extends Entity {
                 noControlTime += HEAT_DISABLE_TIME;
                 timeInHeat = 0;
             }
+        } else {
+            timeInHeat = 0;
         }
     }
 
