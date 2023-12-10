@@ -6,6 +6,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import avianammo.GameRole;
 import avianammo.ImageHelpers;
@@ -13,22 +14,24 @@ import avianammo.PhysicsConstants;
 
 public class HomePage extends AbstractPage {
 
-    private boolean waitingForAction = true;
     private GameRole role = GameRole.NONE;
+    private transient CountDownLatch gameRoleLatch;
 
-    public HomePage() throws IOException {
+    public HomePage(CountDownLatch gameRoleLatch) throws IOException {
         super(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/home-background.png"))));
+
+        this.gameRoleLatch = gameRoleLatch;
     }
 
     @Override
     protected void drawComponents() throws IOException {
-        ImageIcon joinIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/join-button.png"))).getScaledInstance(100, 100, Image.SCALE_FAST));
-        ImageIcon hostIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/host-button.png"))).getScaledInstance(100, 100, Image.SCALE_FAST));
+        ImageIcon joinIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/join-button.png"))));
+        ImageIcon hostIcon = new ImageIcon(ImageHelpers.toCompatibleImage(ImageIO.read(new File("src/com/avian/avianammo/res/images/host-button.png"))));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 0));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 44, 0));
 
         Insets emptyInsets = new Insets(0, 0, 0, 0);
-        Dimension buttonSize = new Dimension(100, 40);
+        Dimension buttonSize = new Dimension(128, 56);
         Border emptyBorder = BorderFactory.createEmptyBorder();
 
         JButton joinButton = new JButton(joinIcon);
@@ -36,8 +39,8 @@ public class HomePage extends AbstractPage {
         joinButton.setPreferredSize(buttonSize);
         joinButton.setBorder(emptyBorder);
         joinButton.addActionListener(e -> {
-            waitingForAction = false;
             role = GameRole.CLIENT;
+            gameRoleLatch.countDown();
         });
         buttonPanel.add(joinButton);
 
@@ -46,8 +49,8 @@ public class HomePage extends AbstractPage {
         hostButton.setPreferredSize(buttonSize);
         hostButton.setBorder(emptyBorder);
         hostButton.addActionListener(e -> {
-            waitingForAction = false;
             role = GameRole.HOST;
+            gameRoleLatch.countDown();
         });
         buttonPanel.add(hostButton);
 
@@ -57,9 +60,9 @@ public class HomePage extends AbstractPage {
         add(buttonPanel);
     }
 
-    public GameRole awaitGameRoleChoice() throws InterruptedException {
-        while (waitingForAction) {
-            Thread.sleep(50);
+    public GameRole awaitGameRoleChoice() {
+        if (role == null) {
+            throw new NullPointerException("Acessed role before selected");
         }
 
         return role;

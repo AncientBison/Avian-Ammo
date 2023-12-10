@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 import avianammo.Direction;
 import avianammo.Poop;
@@ -25,11 +26,14 @@ public class GameSocket {
     private GameState gameState;
     private NetworkInformationData latestInformationData;
 
+    private Map<CountDownLatch, GameState> gameStateChangeLatches = new HashMap<>();
+    private Map<CountDownLatch, GameState> gameStateChangeFromLatches = new HashMap<>();
+
     public GameSocket(Socket socket) throws IOException {
         this.socket = socket;
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
-        gameState = GameState.WAITING_FOR_CONNECTION;
+        setGameState(GameState.WAITING_FOR_CONNECTION);
     }
 
     public enum GameState {
@@ -55,9 +59,9 @@ public class GameSocket {
         
         sendReadyPacket();
         if (gameState == GameState.WAITING_FOR_PLAYER_READY) {
-            gameState = GameState.COUNTING_DOWN;
+            setGameState(GameState.COUNTING_DOWN);
         } else {
-            gameState = GameState.WAITING_FOR_OPPONENT_READY;
+            setGameState(GameState.WAITING_FOR_OPPONENT_READY);
         }
     }
     
@@ -68,30 +72,30 @@ public class GameSocket {
         }
 
         if (gameState == GameState.WAITING_FOR_OPPONENT_READY) {
-            gameState = GameState.COUNTING_DOWN;
+            setGameState(GameState.COUNTING_DOWN);
         } else {
-            gameState = GameState.WAITING_FOR_PLAYER_READY;
+            setGameState(GameState.WAITING_FOR_PLAYER_READY);
         }
     }
 
     public void sendWin() throws IOException {
         outputStream.write(WON);
         if (gameState == GameState.WAITING_AFTER_LOSS) {
-            gameState = GameState.WAITING_AFTER_TIE;
+            setGameState(GameState.WAITING_AFTER_TIE);
         } else if (gameState != GameState.PLAYING) {
             throw new IllegalStateException("Sending a win message at an unexpected time: " + gameState.name());
         } else {
-            gameState = GameState.WAITING_AFTER_WIN;
+            setGameState(GameState.WAITING_AFTER_WIN);
         }
     }
 
     private void receivedWon() {
         if (gameState == GameState.WAITING_AFTER_WIN) {
-            gameState = GameState.WAITING_AFTER_TIE;
+            setGameState(GameState.WAITING_AFTER_TIE);
         } else if (gameState != GameState.PLAYING) {
             throw new IllegalStateException("Received a win message at an unexpected time: " + gameState.name());
         } else {
-            gameState = GameState.WAITING_AFTER_LOSS;
+            setGameState(GameState.WAITING_AFTER_LOSS);
         }
     }
 
@@ -218,6 +222,37 @@ public class GameSocket {
     }
 
     public void startPlay() {
-        this.gameState = GameState.PLAYING;
+        setGameState(GameState.PLAYING);
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+        updateAwaitGameStateConditions();
+    }
+
+    public void awaitGameState(GameState target) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        gameStateChangeLatches.put(latch, target);
+        latch.await();
+    }
+
+    public void awaitGameStateChangeFrom(GameState from) throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1);
+        gameStateChangeFromLatches.put(latch, from);
+        latch.await();
+    }
+
+    private void updateAwaitGameStateConditions() {
+        for (Map.Entry<CountDownLatch, GameState> latchAndTargetState : gameStateChangeLatches.entrySet()) {
+            if (latchAndTargetState.getValue() == gameState) {
+                latchAndTargetState.getKey().countDown();
+            }
+        }
+
+        for (Map.Entry<CountDownLatch, GameState> latchAndFromState : gameStateChangeFromLatches.entrySet()) {
+            if (latchAndFromState.getValue() != gameState) {
+                latchAndFromState.getKey().countDown();
+            }
+        }
     }
 }

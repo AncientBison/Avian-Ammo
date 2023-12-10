@@ -6,39 +6,17 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public abstract class AbstractPage extends JPanel {
-    protected BufferedImage background;
-    private boolean loaded = false;
+    protected transient BufferedImage background;
 
-    public AbstractPage(BufferedImage background) {
+    protected AbstractPage(BufferedImage background) throws IOException {
         this.background = background;
-        loadComponentsInBackground();
+        drawComponents();
     }
 
-    private void loadComponentsInBackground() {
-        SwingWorker<Void, Void> worker = new SwingWorker<>() {
-            @Override
-            protected Void doInBackground() throws IOException {
-                drawComponents();
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                loaded = true;
-                repaint();
-            }
-        };
-
-        worker.execute();
-    }
-
-    public void awaitComponentsLoad() {
-        while (!loaded) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        protected AbstractPage(BufferedImage background, boolean drawComponents) throws IOException {
+        this.background = background;
+        if (drawComponents) {
+            drawComponents();
         }
     }
 

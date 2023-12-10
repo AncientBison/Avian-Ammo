@@ -15,12 +15,12 @@ public class GameCanvas extends JPanel {
     private transient List<Entity> entities = new ArrayList<>();
 
     public GameCanvas(List<Entity> entities) {
-        setMinimumSize(new Dimension(500, 500));
         this.entities = entities;
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         if (entities == null) {
             return;
         }
