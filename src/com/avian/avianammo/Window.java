@@ -1,5 +1,7 @@
 package avianammo;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
@@ -17,7 +19,8 @@ import avianammo.pages.TimerPage;
 
 public class Window extends JFrame {
 
-    private final HomePage home;
+    private HomePage home;
+    private boolean running = true;
 
     public Window() throws IOException, InterruptedException {
         super("Avian Ammo");
@@ -25,21 +28,30 @@ public class Window extends JFrame {
         this.setSize(1024, 1024);
         this.setLocationRelativeTo(null);
 
-        CountDownLatch gameRoleLatch = new CountDownLatch(1);
-
-        home = new HomePage(gameRoleLatch);
-        add(home);
-
         setVisible(true);
 
-        gameRoleLatch.await();
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                running = false;
+            }
+        });
 
-        loadAndPlayGame(home.awaitGameRoleChoice());
+        while (running) {
+            CountDownLatch gameRoleLatch = new CountDownLatch(1);
+            home = new HomePage(gameRoleLatch);
+            add(home);
+
+            SwingUtilities.updateComponentTreeUI(this);
+
+            gameRoleLatch.await();
+
+            remove(home);
+            loadAndPlayGame(home.awaitGameRoleChoice());
+        }
     }
 
     public void loadAndPlayGame(GameRole role) throws IOException, InterruptedException {
-        remove(home);
-
         WaitingPage waitingPage = new WaitingPage();
         add(waitingPage);
 
@@ -107,9 +119,13 @@ public class Window extends JFrame {
             e.printStackTrace();
         }
 
-        GameResultsPage resultsPage = new GameResultsPage(gameSocket.getGameState());
+        GameResultsPage resultsPage = new GameResultsPage(gameSocket.getGameState(), gameSocket);
         add(resultsPage);
 
-        setVisible(true);
+        SwingUtilities.updateComponentTreeUI(this);
+
+        gameSocket.awaitGameState(GameState.WAITING_FOR_CONNECTION);
+
+        remove(resultsPage);
     }
 }
