@@ -29,7 +29,7 @@ public class GameLoop extends TimerTask  {
             if (opponentSeagull.getMovement() instanceof RemoteMovement movement) {
                 updateOpponentSeagull(movement);
             }
-            updateOpponentPoops();
+            updateOpponentDroppings();
             updateSeagullHealth();
         }
 
@@ -37,7 +37,7 @@ public class GameLoop extends TimerTask  {
             updateSeagullPosition(movement);
         }
 
-        updateSeagullPoops();
+        updateSeagullDroppings();
 
         try {
             socket.sendInformation(seagull, opponentSeagull.getHealth());
@@ -46,10 +46,10 @@ public class GameLoop extends TimerTask  {
         }
     }
 
-    private void updateSeagullPoops() {
-        Poop intersectingPoop = opponentSeagull.getFirstIntersectingPoop(seagull.getPoops().values());
-        if (intersectingPoop != null) {
-            seagull.getPoops().remove(intersectingPoop.getId());
+    private void updateSeagullDroppings() {
+        Dropping intersectingDropping = opponentSeagull.getFirstIntersectingDropping(seagull.getDroppings().values());
+        if (intersectingDropping != null) {
+            seagull.getDroppings().remove(intersectingDropping.getId());
             if (opponentSeagull.getHealth() - 1 == 0) {
                 try {
                     socket.sendWin();
@@ -72,9 +72,9 @@ public class GameLoop extends TimerTask  {
                 seagull.flapAnimation();
             }
 
-            if (controls.getPoop().isKeyDown() && seagull.canPoop()) {
+            if (controls.getDropping().isKeyDown() && seagull.canDropDropping()) {
                 try {
-                    seagull.createPoop();
+                    seagull.createDropping();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -100,26 +100,26 @@ public class GameLoop extends TimerTask  {
         movement.setDirection(animationDirection);
     }
 
-    private void updateOpponentPoops() {
-        Map<Integer, Poop> networkPoops = socket.getLatestInformationData().poops();
+    private void updateOpponentDroppings() {
+        Map<Integer, Dropping> networkDroppings = socket.getLatestInformationData().droppings();
 
-        Map<Integer, Poop> clientPoops = opponentSeagull.getPoops();
-        Iterator<Map.Entry<Integer, Poop>> clientPoopIterator = clientPoops.entrySet().iterator();
-        while (clientPoopIterator.hasNext()) {
-            Poop clientPoop = clientPoopIterator.next().getValue();
-            if (!networkPoops.containsKey(clientPoop.getId())) {
-                clientPoopIterator.remove();
+        Map<Integer, Dropping> clientDroppings = opponentSeagull.getDroppings();
+        Iterator<Map.Entry<Integer, Dropping>> clientDroppingIterator = clientDroppings.entrySet().iterator();
+        while (clientDroppingIterator.hasNext()) {
+            Dropping clientDropping = clientDroppingIterator.next().getValue();
+            if (!networkDroppings.containsKey(clientDropping.getId())) {
+                clientDroppingIterator.remove();
                 continue;
             }
 
-            Poop networkPoop = networkPoops.get(clientPoop.getId());
-            RemoteMovement poopMovement = (RemoteMovement) clientPoop.getMovement();
-            poopMovement.setPosition(networkPoop.getPosition());
+            Dropping networkDropping = networkDroppings.get(clientDropping.getId());
+            RemoteMovement droppingMovement = (RemoteMovement) clientDropping.getMovement();
+            droppingMovement.setPosition(networkDropping.getPosition());
         }
 
-        for (Poop networkPoop : networkPoops.values()) {
-            if (!clientPoops.containsKey(networkPoop.getId())) {
-                clientPoops.put(networkPoop.getId(), networkPoop);
+        for (Dropping networkDropping : networkDroppings.values()) {
+            if (!clientDroppings.containsKey(networkDropping.getId())) {
+                clientDroppings.put(networkDropping.getId(), networkDropping);
             }
         }
     }

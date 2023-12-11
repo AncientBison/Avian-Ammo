@@ -43,7 +43,7 @@ public class GameCanvas extends JPanel {
             entity.render(graphics);
 
             if (entity instanceof Seagull) {
-                ((Seagull)entity).renderPoops(graphics);
+                ((Seagull)entity).renderDroppings(graphics);
             }
         }
         Toolkit.getDefaultToolkit().sync(); // Increases framerate

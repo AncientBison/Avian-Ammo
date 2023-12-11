@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 public class Seagull extends Entity {
-    private static final Position POOP_OFFSET = new Position(0, 16);
-    private static final double TIME_BETWEEN_POOPS = 4;
+    private static final Position DROPPING_OFFSET = new Position(0, 16);
+    private static final double TIME_BETWEEN_DROPPINGS = 4;
 
-    public static final double POOP_COLLISION_RADIUS_LEFT = 20;
-    public static final double POOP_COLLISION_RADIUS_RIGHT = 20;
-    public static final double POOP_COLLISION_RADIUS_UP = 10;
-    public static final double POOP_COLLISION_RADIUS_DOWN = 10;
+    public static final double DROPPING_COLLISION_RADIUS_LEFT = 20;
+    public static final double DROPPING_COLLISION_RADIUS_RIGHT = 20;
+    public static final double DROPPING_COLLISION_RADIUS_UP = 10;
+    public static final double DROPPING_COLLISION_RADIUS_DOWN = 10;
 
     public static final Position DEFAULT_POSITION = new Position(50, 350);
     public static final Direction DEFAULT_DIRECTION = Direction.RIGHT;
@@ -29,8 +29,8 @@ public class Seagull extends Entity {
 
     public static final byte MAX_HEALTH = 3;
 
-    private Map<Integer, Poop> poops = new HashMap<>();
-    private double timeUntilPoopAllowed = 0;
+    private final Map<Integer, Dropping> droppings = new HashMap<>();
+    private double timeUntilDroppingAllowed = 0;
 
     private double timeInHeat = 0;
 
@@ -59,9 +59,9 @@ public class Seagull extends Entity {
         return new Seagull(movement);
     }
 
-    private void updateTimeUntilNextPoopAllowed(double deltaTime) {
-        if (timeUntilPoopAllowed > 0) {
-            timeUntilPoopAllowed = Math.max(0, timeUntilPoopAllowed - deltaTime);
+    private void updateTimeUntilNextDroppingAllowed(double deltaTime) {
+        if (timeUntilDroppingAllowed > 0) {
+            timeUntilDroppingAllowed = Math.max(0, timeUntilDroppingAllowed - deltaTime);
         }
     }
 
@@ -71,45 +71,45 @@ public class Seagull extends Entity {
 
     public void tick(double deltaTime) {
         movement.tick(deltaTime);
-        List<Poop> poopsToRemove = new ArrayList<>();
-        for (Poop poop : poops.values()) {
-            poop.tick(deltaTime);
-            if (poop.shouldBeRemoved()) {
-                poopsToRemove.add(poop);
+        List<Dropping> droppingsToRemove = new ArrayList<>();
+        for (Dropping dropping : droppings.values()) {
+            dropping.tick(deltaTime);
+            if (dropping.shouldBeRemoved()) {
+                droppingsToRemove.add(dropping);
             }
         }
 
-        for (Poop poop : poopsToRemove) {
-            poops.remove(poop.getId());
+        for (Dropping dropping : droppingsToRemove) {
+            droppings.remove(dropping.getId());
         }
 
         renderer.tick(deltaTime);
-        updateTimeUntilNextPoopAllowed(deltaTime);
+        updateTimeUntilNextDroppingAllowed(deltaTime);
 
         updateTimeInHeat(deltaTime);
     }
 
     public void render(Graphics2D graphics) {
         renderer.render(graphics);
-        renderPoops(graphics);
+        renderDroppings(graphics);
     }
 
-    public void renderPoops(Graphics2D graphics) {
-        for (Poop poop : poops.values()) {
-            poop.render(graphics);
+    public void renderDroppings(Graphics2D graphics) {
+        for (Dropping dropping : droppings.values()) {
+            dropping.render(graphics);
         }
     }
 
-    public boolean canPoop() {
-        return timeUntilPoopAllowed == 0;
+    public boolean canDropDropping() {
+        return timeUntilDroppingAllowed == 0;
     }
 
-    public void createPoop() throws IOException {
-        Poop poop = Poop.createPhysicsPoop(
-                new Position(movement.getPosition().x() + POOP_OFFSET.x(),
-                        movement.getPosition().y() + POOP_OFFSET.y()));
-        poops.put(poop.getId(), poop);
-        timeUntilPoopAllowed = TIME_BETWEEN_POOPS;
+    public void createDropping() throws IOException {
+        Dropping dropping = Dropping.createPhysicsDropping(
+                new Position(movement.getPosition().x() + DROPPING_OFFSET.x(),
+                        movement.getPosition().y() + DROPPING_OFFSET.y()));
+        droppings.put(dropping.getId(), dropping);
+        timeUntilDroppingAllowed = TIME_BETWEEN_DROPPINGS;
     }
 
     public void updateTimeInHeat(double deltaTime) {
@@ -134,12 +134,8 @@ public class Seagull extends Entity {
         return movement;
     }
 
-    public Map<Integer, Poop> getPoops() {
-        return poops;
-    }
-
-    public void setPoops(Map<Integer, Poop> poops) {
-        this.poops = poops;
+    public Map<Integer, Dropping> getDroppings() {
+        return droppings;
     }
 
     public Position getPosition() {
@@ -170,15 +166,15 @@ public class Seagull extends Entity {
         return renderer.getAnimationDirection();
     }
 
-    public Poop getFirstIntersectingPoop(Collection<Poop> poops) {
+    public Dropping getFirstIntersectingDropping(Collection<Dropping> droppings) {
 
-        for (Poop poop : poops) {
+        for (Dropping dropping : droppings) {
 
-            if (getPosition().x() > poop.getPosition().x() - POOP_COLLISION_RADIUS_LEFT &&
-                    getPosition().x() < poop.getPosition().x() + POOP_COLLISION_RADIUS_RIGHT &&
-                    getPosition().y() > poop.getPosition().y() - POOP_COLLISION_RADIUS_UP &&
-                    getPosition().y() < poop.getPosition().y() + POOP_COLLISION_RADIUS_DOWN) {
-                return poop;
+            if (getPosition().x() > dropping.getPosition().x() - DROPPING_COLLISION_RADIUS_LEFT &&
+                    getPosition().x() < dropping.getPosition().x() + DROPPING_COLLISION_RADIUS_RIGHT &&
+                    getPosition().y() > dropping.getPosition().y() - DROPPING_COLLISION_RADIUS_UP &&
+                    getPosition().y() < dropping.getPosition().y() + DROPPING_COLLISION_RADIUS_DOWN) {
+                return dropping;
             }
         }
 

@@ -12,22 +12,22 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import avianammo.Direction;
-import avianammo.Poop;
+import avianammo.Dropping;
 import avianammo.Position;
 import avianammo.RemoteMovement;
 import avianammo.Seagull;
 
 public class GameSocket implements AutoCloseable {
 
-    private Socket socket;
-    private OutputStream outputStream;
-    private InputStream inputStream;
+    private final Socket socket;
+    private final OutputStream outputStream;
+    private final InputStream inputStream;
     private Thread packetListenerThread;
     private GameState gameState;
     private NetworkInformationData latestInformationData;
 
-    private Map<CountDownLatch, GameState> gameStateChangeLatches = new HashMap<>();
-    private Map<CountDownLatch, GameState> gameStateChangeFromLatches = new HashMap<>();
+    private final Map<CountDownLatch, GameState> gameStateChangeLatches = new HashMap<>();
+    private final Map<CountDownLatch, GameState> gameStateChangeFromLatches = new HashMap<>();
 
     private boolean listening;
 
@@ -101,7 +101,7 @@ public class GameSocket implements AutoCloseable {
         }
     }
 
-    public record NetworkInformationData(boolean opponentFlapping, Direction opponentAnimationDirection, double opponentX, double opponentY, byte seagullHealth, Map<Integer, Poop> poops) {}
+    public record NetworkInformationData(boolean opponentFlapping, Direction opponentAnimationDirection, double opponentX, double opponentY, byte seagullHealth, Map<Integer, Dropping> droppings) {}
 
     private void receivedInformation(byte[] data) throws IOException {
         int offset = 0;
@@ -115,21 +115,21 @@ public class GameSocket implements AutoCloseable {
         offset += 8;
         double opponentY = ByteConversion.bytesToDouble(data, offset);
         offset += 8;
-        int numPoops = ByteConversion.bytesToInt(data, offset);
-        Map<Integer, Poop> poops = new HashMap<>();
+        int numDroppings = ByteConversion.bytesToInt(data, offset);
+        Map<Integer, Dropping> droppings = new HashMap<>();
         offset += 4;
-        for (int i = 0; i < numPoops; i++) {
+        for (int i = 0; i < numDroppings; i++) {
             int id = ByteConversion.bytesToInt(data, offset);
             offset += 4;
-            double poopX = ByteConversion.bytesToDouble(data, offset);
+            double droppingX = ByteConversion.bytesToDouble(data, offset);
             offset += 8;
-            double poopY = ByteConversion.bytesToDouble(data, offset);
+            double droppingY = ByteConversion.bytesToDouble(data, offset);
             offset += 8;
 
-            poops.put(id, Poop.createRemotePoop(new RemoteMovement(new Position(poopX, poopY), Direction.CENTER), id));
+            droppings.put(id, Dropping.createRemoteDropping(new RemoteMovement(new Position(droppingX, droppingY), Direction.CENTER), id));
         }
 
-        latestInformationData = new NetworkInformationData(opponentFlapping, opponentAnimationDirection, opponentX, opponentY, seagullHealth, poops);
+        latestInformationData = new NetworkInformationData(opponentFlapping, opponentAnimationDirection, opponentX, opponentY, seagullHealth, droppings);
     }
 
     public void sendInformation(Seagull seagull, byte opponentHealth) throws IOException {
@@ -139,8 +139,8 @@ public class GameSocket implements AutoCloseable {
         dataSize += 1; // Flags
         dataSize += 1; // Opponent health
         dataSize += 16; // Seagull x/y
-        dataSize += 4; // Number of poops
-        dataSize += (8 + 8 + 4) * seagull.getPoops().size(); // Poops time conceived, x/y
+        dataSize += 4; // Number of droppings
+        dataSize += (8 + 8 + 4) * seagull.getDroppings().size(); // Droppings time conceived, x/y
         outputStream.write(ByteConversion.intToBytes((dataSize)));
 
         byte flags = 0;
@@ -158,11 +158,11 @@ public class GameSocket implements AutoCloseable {
 
         outputStream.write(ByteConversion.doubleToBytes(seagull.getPosition().x()));
         outputStream.write(ByteConversion.doubleToBytes(seagull.getPosition().y()));
-        outputStream.write(ByteConversion.intToBytes(seagull.getPoops().size()));
-        for (Poop poop : seagull.getPoops().values()) {
-            outputStream.write(ByteConversion.intToBytes(poop.getId()));
-            outputStream.write(ByteConversion.doubleToBytes(poop.getPosition().x()));
-            outputStream.write(ByteConversion.doubleToBytes(poop.getPosition().y()));
+        outputStream.write(ByteConversion.intToBytes(seagull.getDroppings().size()));
+        for (Dropping dropping : seagull.getDroppings().values()) {
+            outputStream.write(ByteConversion.intToBytes(dropping.getId()));
+            outputStream.write(ByteConversion.doubleToBytes(dropping.getPosition().x()));
+            outputStream.write(ByteConversion.doubleToBytes(dropping.getPosition().y()));
         }
     }
 
@@ -185,19 +185,14 @@ public class GameSocket implements AutoCloseable {
                     }
                     byte packetType = bytesRead[0];
                     switch (packetType) {
-                    case READY:
-                        receivedReady();
-                        break;
-                    case INFORMATION:
-                        int numBytes = ByteConversion.bytesToInt(inputStream.readNBytes(4), 0);
-                        receivedInformation(inputStream.readNBytes(numBytes));
-                        break;
-                    case WON:
-                        receivedWon();
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Packet type not valid " + packetType);
-                        
+                        case READY -> receivedReady();
+                        case INFORMATION -> {
+                            int numBytes = ByteConversion.bytesToInt(inputStream.readNBytes(4), 0);
+                            receivedInformation(inputStream.readNBytes(numBytes));
+                        }
+                        case WON -> receivedWon();
+                        default ->
+                                throw new IllegalArgumentException("Packet type not valid " + packetType);
                     }
                 } catch (IOException e) {
                     if (listening) {
@@ -216,7 +211,7 @@ public class GameSocket implements AutoCloseable {
     }
 
     @Override
-    public void close() throws IOException, InterruptedException {
+    public void close() throws IOException {
         listening = false;
         packetListenerThread.interrupt();
         socket.close();

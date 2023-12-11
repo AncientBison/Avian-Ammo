@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 
 import static avianammo.ImageTools.toCompatibleImage;
 
-public class PoopRenderer extends Renderer {
+public class DroppingRenderer extends Renderer {
 
     private final Random random = new Random();
 
@@ -22,17 +22,17 @@ public class PoopRenderer extends Renderer {
         graphics.drawImage(currentImage, (int) position.x() - currentImage.getWidth()/2, (int) position.y() - currentImage.getHeight()/2, null);
     }
 
-    public PoopRenderer(Movement movement) throws IOException {
+    public DroppingRenderer(Movement movement) throws IOException {
         this.movement = movement;
-        currentImage = toCompatibleImage(getRandomPoopImage());
+        currentImage = toCompatibleImage(getRandomDroppingImage());
     }
 
-    private BufferedImage getRandomPoopImage() throws IOException {
+    private BufferedImage getRandomDroppingImage() throws IOException {
         int choice = random.nextInt(3); 
         return toCompatibleImage(ImageIO.read(switch (choice) {
-            case 0 -> new File("src/com/avian/avianammo/res/images/poop.png");
-            case 1 -> new File("src/com/avian/avianammo/res/images/poop2.png");
-            case 2 -> new File("src/com/avian/avianammo/res/images/poop3.png");
+            case 0 -> new File("src/com/avian/avianammo/res/images/dropping1.png");
+            case 1 -> new File("src/com/avian/avianammo/res/images/dropping2.png");
+            case 2 -> new File("src/com/avian/avianammo/res/images/dropping3.png");
             default -> null;
         }));
     }
