@@ -1,6 +1,6 @@
 package avianammo;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -63,8 +63,26 @@ public class SeagullRenderer extends Renderer {
         }
 
         graphics.drawImage(currentImage, (int) position.x() - currentImage.getWidth()/2, (int) position.y() - currentImage.getHeight()/2, null);
+
+        if(seagull.getMovement() instanceof PhysicsMovement) {
+            updateScreenDarkness(graphics);
+        }
     }
 
+    private void updateScreenDarkness(Graphics2D graphics) {
+        double darkness = seagull.getTimeInHeat() / Seagull.HEAT_MAX_TIME;
+
+        if (seagull.getNoControlTime() > 0) {
+            darkness = (seagull.getNoControlTime() / Seagull.HEAT_DISABLE_TIME);
+        }
+
+        darkness = Math.clamp(darkness, 0, 0.9);
+
+        graphics.setColor(new Color(0, 0, 0, (int) (darkness * 255)));
+        graphics.fillRect(0, 0, GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT);
+    }
+
+    @Override
     protected void updateCurrentAnimation() {
         boolean flapping = flapDuration >= 0;
 

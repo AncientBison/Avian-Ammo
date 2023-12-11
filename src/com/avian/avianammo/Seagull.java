@@ -184,4 +184,12 @@ public class Seagull extends Entity {
 
         return null;
     }
+
+    public double getNoControlTime() {
+        return noControlTime;
+    }
+
+    public double getTimeInHeat() {
+        return timeInHeat;
+    }
 }

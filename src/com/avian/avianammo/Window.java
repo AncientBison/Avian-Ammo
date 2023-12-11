@@ -25,7 +25,7 @@ public class Window extends JFrame {
     public Window() throws IOException, InterruptedException {
         super("Avian Ammo");
 
-        setSize(1024, 1024);
+        setSize(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT);
         setLocationRelativeTo(null);
         setResizable(false);
 
