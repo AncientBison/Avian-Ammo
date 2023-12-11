@@ -5,33 +5,33 @@ import java.io.IOException;
 
 import avianammo.PhysicsMovement.SpeedLimits;
 
-public class Poop extends Entity {
+public class Dropping extends Entity {
 
-    private final PoopRenderer renderer;
+    private final DroppingRenderer renderer;
     private final int id;
 
-    private Poop(Movement movement) throws IOException {
+    private Dropping(Movement movement) throws IOException {
         super(movement);
 
         id = (int)System.currentTimeMillis();
         
-        renderer = new PoopRenderer(movement);
+        renderer = new DroppingRenderer(movement);
     }
 
-    private Poop(Movement movement, int id) throws IOException {
+    private Dropping(Movement movement, int id) throws IOException {
         super(movement);
 
         this.id = id;
         
-        renderer = new PoopRenderer(movement);
+        renderer = new DroppingRenderer(movement);
     }
 
-    public static Poop createPhysicsPoop(Position initialPosition) throws IOException {
-        return new Poop(new PhysicsMovement(initialPosition, new SpeedLimits(0, 2, 0), 0.4, PhysicsConstants.POOP_SIZE));
+    public static Dropping createPhysicsDropping(Position initialPosition) throws IOException {
+        return new Dropping(new PhysicsMovement(initialPosition, new SpeedLimits(0, 2, 0), 0.4, PhysicsConstants.DROPPING_SIZE));
     }
 
-    public static Poop createRemotePoop(RemoteMovement remoteMovement, int id) throws IOException {
-        return new Poop(remoteMovement, id);
+    public static Dropping createRemoteDropping(RemoteMovement remoteMovement, int id) throws IOException {
+        return new Dropping(remoteMovement, id);
     }
 
     public void tick(double deltaTime) {
@@ -39,7 +39,7 @@ public class Poop extends Entity {
     }
 
     public boolean shouldBeRemoved() {
-        return getPosition().y() >= (PhysicsConstants.MAX_Y - PhysicsConstants.POOP_SIZE);
+        return getPosition().y() >= (PhysicsConstants.MAX_Y - PhysicsConstants.DROPPING_SIZE);
     }
 
     public void render(Graphics2D graphics) {
@@ -61,11 +61,11 @@ public class Poop extends Entity {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Poop)) {
+        if (!(obj instanceof Dropping)) {
             return false;
         }
 
-        return this.id == ((Poop)obj).id;
+        return this.id == ((Dropping)obj).id;
     }
 
     public int getId() {

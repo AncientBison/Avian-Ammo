@@ -44,7 +44,7 @@ public class Controls {
         return keys.get(FLAP_KEY);
     }
 
-    public KeyState getPoop() {
+    public KeyState getDropping() {
         return keys.get(ATTACK_KEY);
     }
 }
