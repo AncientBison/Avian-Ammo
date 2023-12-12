@@ -64,7 +64,7 @@ public class SeagullRenderer extends Renderer {
 
         graphics.drawImage(currentImage, (int) position.x() - currentImage.getWidth()/2, (int) position.y() - currentImage.getHeight()/2, null);
 
-        if(seagull.getMovement() instanceof PhysicsMovement) {
+        if (seagull.getMovement() instanceof PhysicsMovement) {
             updateScreenDarkness(graphics);
         }
     }
